@@ -6,8 +6,8 @@
 <!-- usernamespace는 반드시 mapper 위치로 설정해야 된다. -->
 <mapper namespace="com.ict.camping.domain.users.mapper.UsersMapper">
 	<insert id="joinUser" parameterType="UsersVO">
-        INSERT INTO users(id, password, username, phone, zipcode, email, address, address_detail, warn, join_date)
-                VALUES (#{id}, #{password}, #{username}, #{phone}, #{zipcode}, #{email}, #{address}, #{address_detail}, #{warn}, NOW())
+        INSERT INTO users(id, password, username, phone, zipcode, email, address, address_detail, warn, join_date ,type)
+                VALUES (#{id}, #{password}, #{username}, #{phone}, #{zipcode}, #{email}, #{address}, #{address_detail}, #{warn}, NOW(),#{type})
 	</insert>
     
 	<insert id="joinBusinessuser" parameterType="UsersVO">
@@ -41,7 +41,7 @@
             sns_email_google, 
             </if>
             sns_provider,
-            join_date)
+            join_date ,type)
         VALUES (
             #{id}, 
             <if test="password != null">
@@ -58,7 +58,7 @@
             #{sns_email_google},
             </if>
             #{sns_provider},
-            NOW())
+            NOW(), #{type})
 	</insert>
     <select id="findUserByProvider" parameterType="UsersVO" resultType="UsersVO">
         SELECT * FROM users 
