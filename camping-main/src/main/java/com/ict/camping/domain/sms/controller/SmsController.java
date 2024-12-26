@@ -35,6 +35,7 @@ public class SmsController {
   public DataVO sendOtp(@RequestBody Map<String, String> request) {
       DataVO dataVO = new DataVO();
       String phone = request.get("phone");
+      System.out.println(phone);
       String otp;
   
       try {
@@ -50,6 +51,7 @@ public class SmsController {
       } else {
           dataVO.setSuccess(false);
           dataVO.setMessage("인증번호 발송에 실패했습니다.");
+
       }
   
       return dataVO; // 결과 반환

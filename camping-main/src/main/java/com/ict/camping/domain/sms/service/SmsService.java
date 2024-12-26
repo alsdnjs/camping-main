@@ -26,6 +26,7 @@ public class SmsService {
 
         // E.164 형식으로 전화번호를 변환 (예: +82 103076XXXX)
     String formattedPhoneNumber = formatPhoneNumber(toPhoneNumber);
+    System.out.println(formattedPhoneNumber);
 
     // creator : 객체 생성
     // create : 요청 보내기

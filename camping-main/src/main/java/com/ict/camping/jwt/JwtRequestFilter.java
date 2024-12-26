@@ -40,6 +40,18 @@ public class JwtRequestFilter extends OncePerRequestFilter{
       throws ServletException, IOException {
 
         // System.out.println("JwtRequestFilter");
+        
+      // 요청 URI 확인
+      String uri = request.getRequestURI();
+
+      // 로그인 및 회원가입 요청은 필터 검증 제외
+      // 로그인 및 회원가입 시에는 처음에 토큰이 없고 새로 생성되거나 필요없음
+      if (uri.equals("/api/users/login") || uri.equals("/api/users/join")) {
+          filterChain.doFilter(request, response);
+          return;
+      }
+      
+
 
       final String requestTokenHeader = request.getHeader("Authorization");
       String username = null;

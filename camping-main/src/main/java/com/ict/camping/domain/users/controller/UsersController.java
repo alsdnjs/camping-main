@@ -190,9 +190,41 @@ public class UsersController {
   }
 
   @PostMapping("/getUserInfo")
-  public DataVO getUserInfo(@RequestBody String entity) {
+  public DataVO getUserInfo(@RequestHeader("Authorization") String authorizationHeader) {
     DataVO dataVO = new DataVO();
+    try {
+      // 토큰 추출
+      String token = authorizationHeader.replace("Bearer ", "");
+      System.out.println("토큰 : " + token);
 
+      // 토큰 검증
+      if (!jwtUtil.validateToken(token)) {
+          dataVO.setSuccess(false);
+          dataVO.setMessage("유효하지 않은 토큰입니다.");
+          return dataVO;
+      }
+
+      // 사용자 ID 추출
+      String userId = jwtUtil.getUserIdFromToken(token);
+      System.out.println("유저 아이디: "+  userId);
+
+      // 사용자 정보 조회
+      UsersVO userProfile = service.getUserById(userId);
+      System.out.println(userProfile);
+
+      if (userProfile != null) {
+        dataVO.setSuccess(true);
+        dataVO.setData(userProfile);
+        dataVO.setMessage("성공");
+      } else {
+        dataVO.setSuccess(false);
+        dataVO.setMessage("사용자 정보를 찾을 수 없습니다.");
+      }
+
+    } catch(Exception e){
+      dataVO.setSuccess(false);
+      dataVO.setMessage("error");
+    }
       
     return dataVO;
   }

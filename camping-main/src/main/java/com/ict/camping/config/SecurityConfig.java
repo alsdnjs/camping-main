@@ -58,11 +58,11 @@ public class SecurityConfig {
                       .requestMatchers("/upload/**").permitAll()
                       .requestMatchers("/oauth2/**").permitAll()
                       // 특정 URL에 인증없이 허용
-                      .requestMatchers("/api/users/join", "/api/users/login", "/api/users/idCheck",
-                              "/api/signup/sendVerificationEmail", "/api/signup/verifyEmail", "/api/sms/**", "api/users/profile")
-                      .permitAll()
+                      .requestMatchers("/api/users/join", "/api/users/login", "/api/users/idCheck","api/camping/sites","api/camping/sites/{contentId}",
+                              "/api/signup/sendVerificationEmail", "/api/signup/verifyEmail", "/api/sms/**", "api/users/profile" ,"api/admin/**", "/api/member/**")
+                      .permitAll() 
                       // 나머지는 인증 필요
-                      .anyRequest().permitAll())
+                      .anyRequest().authenticated())
 
               // oauth2 Login 설정
               // successHandler = 로그인 성공 시 호출
