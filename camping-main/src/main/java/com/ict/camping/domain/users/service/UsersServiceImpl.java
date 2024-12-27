@@ -1,5 +1,8 @@
 package com.ict.camping.domain.users.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -54,5 +57,20 @@ public class UsersServiceImpl implements UsersService{
   @Override
   public String getUserIdxById(String id) {
     return usersMapper.getUserIdxById(id);
+  }
+
+
+  @Override
+  public String getPasswordById(String id) {
+    return usersMapper.getPasswordById(id);
+  }
+
+
+  @Override
+  public int updatePassword(String id, String password) {
+    Map<String, String> map = new HashMap<>();
+    map.put("id", id);
+    map.put("password", password);
+    return usersMapper.updatePassword(map);
   }
 }

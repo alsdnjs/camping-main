@@ -40,7 +40,7 @@ public class JwtRequestFilter extends OncePerRequestFilter{
       throws ServletException, IOException {
 
         // System.out.println("JwtRequestFilter");
-        
+
       // 요청 URI 확인
       String uri = request.getRequestURI();
 
@@ -50,8 +50,6 @@ public class JwtRequestFilter extends OncePerRequestFilter{
           filterChain.doFilter(request, response);
           return;
       }
-      
-
 
       final String requestTokenHeader = request.getHeader("Authorization");
       String username = null;

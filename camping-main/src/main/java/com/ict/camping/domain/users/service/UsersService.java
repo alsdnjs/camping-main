@@ -10,4 +10,7 @@ public interface UsersService {
   public UsersVO getUserById(String id);
   public UsersVO findUserByProvider(UsersVO uvo);
   public int insertUser(UsersVO uvo);
+
+  public String getPasswordById(String id);
+  public int updatePassword(String id, String password);
 }

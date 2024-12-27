@@ -190,7 +190,7 @@ public class UsersController {
   }
 
   @PostMapping("/getUserInfo")
-  public DataVO getUserInfo(@RequestHeader("Authorization") String authorizationHeader) {
+  public DataVO getUserInfo(@RequestBody String password, @RequestHeader("Authorization") String authorizationHeader) {
     DataVO dataVO = new DataVO();
     try {
       // 토큰 추출
@@ -199,9 +199,9 @@ public class UsersController {
 
       // 토큰 검증
       if (!jwtUtil.validateToken(token)) {
-          dataVO.setSuccess(false);
-          dataVO.setMessage("유효하지 않은 토큰입니다.");
-          return dataVO;
+        dataVO.setSuccess(false);
+        dataVO.setMessage("유효하지 않은 토큰입니다.");
+        return dataVO;
       }
 
       // 사용자 ID 추출
@@ -227,5 +227,83 @@ public class UsersController {
     }
       
     return dataVO;
+  }
+  // 비밀번호 체크
+  @PostMapping("/passwordCheck")
+  public DataVO userPasswordCheck(@RequestBody String password, @RequestHeader("Authorization") String authorizationHeader){
+
+    DataVO dataVO = new DataVO();
+    System.out.println("비밀번호 : " + password);
+    try {
+      // 토큰 추출
+      String token = authorizationHeader.replace("Bearer ", "");
+      System.out.println("토큰 : " + token);
+      // 토큰 검증
+      if (!jwtUtil.validateToken(token)) {
+        dataVO.setSuccess(false);
+        dataVO.setMessage("유효하지 않은 토큰입니다.");
+        return dataVO;
+      }
+      
+      // 사용자 ID 추출
+      String userId = jwtUtil.getUserIdFromToken(token);
+      System.out.println("유저 아이디: "+  userId);
+      String encodedPassword = service.getPasswordById(userId);
+
+      System.out.println("암호화된 비밀번호 ㅣ " + encodedPassword);
+      // 비밀번호 검증 받기
+      if(!passwordEncoder.matches(password, encodedPassword)){
+        dataVO.setSuccess(false);
+        dataVO.setMessage("비밀번호가 일치하지 않습니다.");
+      } else{
+        dataVO.setSuccess(true);
+        dataVO.setMessage("비밀번호 맞음.");
+      }
+
+      return dataVO;
+    } catch (Exception e) {
+      dataVO.setSuccess(false);
+      dataVO.setMessage("error");
+      return dataVO;
+    }
+  }
+
+  // 비밀번호 변경
+  @PostMapping("/updatePassword")
+  public DataVO updatePassword(@RequestBody String password, @RequestHeader("Authorization") String authorizationHeader){
+    DataVO dataVO = new DataVO();
+    System.out.println("비밀번호 : " + password);
+    String newEncodedPassword = passwordEncoder.encode(password); // 비밀번호 암호화
+    try {
+      // 토큰 추출
+      String token = authorizationHeader.replace("Bearer ", "");
+      System.out.println("토큰 : " + token);
+      // 토큰 검증
+      if (!jwtUtil.validateToken(token)) {
+        dataVO.setSuccess(false);
+        dataVO.setMessage("유효하지 않은 토큰입니다.");
+        return dataVO;
+      }
+      
+      // 사용자 ID 추출
+      String userId = jwtUtil.getUserIdFromToken(token);
+      System.out.println("유저 아이디: "+  userId);
+
+      // DB에서 비밀번호 변경
+      int result = service.updatePassword(userId, newEncodedPassword);
+      System.out.println(result);
+      if(result > 0){
+        dataVO.setSuccess(true);
+        dataVO.setMessage("비밀번호 변경에 성공했습니다.");
+      } else {
+        dataVO.setSuccess(false);
+        dataVO.setMessage("비밀번호 변경에 실패했습니다.");
+      }
+      return dataVO;
+    } catch(Exception e){
+      dataVO.setSuccess(false);
+      dataVO.setMessage("error : " + e );
+      return dataVO;
+    }
   }
 }
