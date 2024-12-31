@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ict.camping.domain.reqularMeeting.mapper.ReqularMeetingMapper">
+
+  <!-- 1) 정규 모임 생성 -->
+  <insert id="insertMeeting" 
+          parameterType="com.ict.camping.domain.reqularMeeting.vo.ReqularMeetingVO"
+          useGeneratedKeys="true"
+          keyProperty="meeting_idx">
+    INSERT INTO regular_meetings 
+      (name, description, profile_image, region, subregion, personnel, leader_idx, created_at)
+    VALUES 
+      (#{name}, #{description}, #{profile_image}, #{region}, #{subregion}, #{personnel}, #{leader_idx}, NOW())
+  </insert>
+
+  <!-- 2) 전체 모임 목록 가져오기 -->
+  <!--  user_idx를 파라미터로 받아와서, 현재 사용자가 좋아요를 눌렀는지(left join) 체크 -->
+  <select id="selectAllMeetings" resultType="map">
+    SELECT 
+      rm.meeting_idx,
+      rm.name,
+      rm.description,
+      rm.profile_image,
+      rm.region,
+      rm.subregion,
+      rm.personnel,
+      DATE_FORMAT(rm.created_at, '%Y-%m-%d') AS created_at,
+      /* 해시태그를 쉼표로 concat */
+      GROUP_CONCAT(DISTINCT h.name) AS hashtags,
+      /* 좋아요 여부 (존재하면 true, 없으면 false) */
+      CASE WHEN rmf.user_idx IS NOT NULL THEN TRUE ELSE FALSE END AS favorites_idx
+    FROM regular_meetings rm
+    LEFT JOIN meeting_hashtags mh 
+           ON rm.meeting_idx = mh.meeting_idx
+    LEFT JOIN hashtags h 
+           ON mh.hashtag_idx = h.hashtag_idx
+    LEFT JOIN regular_meetings_favorites rmf 
+           ON rm.meeting_idx = rmf.meeting_idx 
+          AND rmf.user_idx = #{user_idx}
+    GROUP BY rm.meeting_idx
+  </select>
+
+  <!-- 3) 특정 모임 조회 (단건) -->
+  <!--  resultType을 VO 혹은 map으로 할지 결정 -->
+  <select id="selectMeetingById" parameterType="int" resultType="com.ict.camping.domain.reqularMeeting.vo.ReqularMeetingVO">
+    SELECT 
+      rm.meeting_idx,
+      rm.name,
+      rm.description,
+      rm.profile_image,
+      rm.region,
+      rm.subregion,
+      rm.personnel,
+      rm.leader_idx,
+      rm.created_at
+    FROM regular_meetings rm
+    WHERE rm.meeting_idx = #{meetingId}
+  </select>
+
+  <!-- 4) 해시태그 존재 여부 조회 -->
+  <select id="findHashtagByName" parameterType="string" resultType="int">
+    SELECT hashtag_idx
+    FROM hashtags
+    WHERE name = #{hashtag}
+  </select>
+
+  <!-- 5) 해시태그 새로 삽입 -->
+  <insert id="insertHashtag" parameterType="string">
+    INSERT INTO hashtags (name)
+    VALUES (#{hashtag})
+  </insert>
+
+  <!-- 6) 모임-해시태그 연결 삽입 -->
+  <insert id="insertMeetingHashtags">
+    INSERT INTO meeting_hashtags (meeting_idx, hashtag_idx)
+    VALUES (#{meeting_idx}, #{hashtag_idx})
+  </insert>
+
+  <!-- 필요하다면 해시태그 목록만 가져오는 등의 쿼리를 추가 -->
+  <!-- 예) 해시태그 전부 가져오기 -->
+  <select id="selectAllHashtags" resultType="com.ict.camping.domain.reqularMeeting.vo.HashtagVO">
+    SELECT hashtag_idx, name 
+    FROM hashtags
+    ORDER BY hashtag_idx
+  </select>
+
+   <!-- 좋아요 상태 확인 -->
+    <select id="checkFavorite" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM regular_meetings_favorites
+        WHERE user_idx = #{user_idx} AND meeting_idx = #{meeting_idx}
+    </select>
+
+    <!-- 좋아요 추가 -->
+    <insert id="insertFavorite">
+        INSERT INTO regular_meetings_favorites (user_idx, meeting_idx)
+        VALUES (#{user_idx}, #{meeting_idx})
+    </insert>
+
+    <!-- 좋아요 삭제 -->
+    <delete id="deleteFavorite">
+        DELETE FROM regular_meetings_favorites
+        WHERE user_idx = #{user_idx} AND meeting_idx = #{meeting_idx}
+    </delete>
+
+    <!-- 모임 가입 멤버 3명 프사 -->
+    <select id="selectMeetingMembersProfile" resultType="map">
+      SELECT u.user_idx, u.avatar_url
+        FROM regular_meeting_members m
+        JOIN users u ON m.user_idx = u.user_idx
+      WHERE m.meeting_idx = #{meeting_idx}
+      ORDER BY m.joined_at ASC
+      LIMIT 3
+    </select>
+
+</mapper>

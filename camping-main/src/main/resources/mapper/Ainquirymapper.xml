@@ -37,20 +37,33 @@
             i.inquiry_idx = #{inquiry_idx}
     </select>
 
+    <select id="findInquiryAnswer" parameterType="String" resultType="com.ict.camping.admin.inquiry.vo.AInquiryAnswerVO">
+        select * from inquiry_answer where inquiry_idx = #{inquiry_idx}
+    </select>
+
     <!-- 관리자 삭제 -->
     <delete id="deleteAdmin" parameterType="String">
         DELETE FROM admins WHERE admin_idx = #{admin_idx}
     </delete>
 
     <!-- 관리자 추가 -->
-    <insert id="insertAdmin" parameterType="com.ict.camping.admin.admin.vo.AdminVO">
-        INSERT INTO admins (user_idx, admin_type, assigned_at)
-        VALUES (#{user_idx}, #{admin_type}, NOW())
+    <insert id="insertAnswer" parameterType="com.ict.camping.admin.inquiry.vo.AInquiryAnswerVO">
+        INSERT INTO inquiry_answer (inquiry_idx, answer, admin_idx, created_at)
+        VALUES (#{inquiry_idx}, #{answer}, #{admin_idx}, NOW())
     </insert>
 
     <!-- 사용자 중복 확인 -->
-    <select id="checkIdDuplicate" parameterType="String" resultType="int">
-        SELECT COUNT(*) FROM admins WHERE user_idx = #{user_idx}
+    <select id="checkAnswer" parameterType="String" resultType="int">
+        SELECT COUNT(*) FROM inquiry_answer WHERE inquiry_idx = #{inquiry_idx}
     </select>
+
+    <!-- 답변 수정 -->
+    <update id="updateAnswer" parameterType="com.ict.camping.admin.inquiry.vo.AInquiryAnswerVO">
+        update inquiry_answer
+        set answer = #{answer},
+        admin_idx = #{admin_idx},
+        created_at = Now()
+        where inquiry_idx = #{inquiry_idx}
+    </update>
 
 </mapper>

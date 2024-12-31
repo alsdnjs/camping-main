@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ict.camping.admin.notices.mapper.ANoticeMapper">
+
+    <!-- 모든 회원 조회 -->
+    <select id="findAllNotice" resultType="com.ict.camping.admin.notices.vo.ANoticeVO">
+    SELECT 
+        n.*,
+        a.admin_idx,
+        u.id -- users 테이블의 id 컬럼
+    FROM 
+        notices n
+    JOIN 
+        admins a ON n.admin_idx = a.admin_idx
+    JOIN 
+        users u ON a.user_idx = u.user_idx
+    </select>
+
+    <insert id="insertNotice" parameterType="com.ict.camping.admin.notices.vo.ANoticeVO">
+        INSERT INTO notices (notice_subject, notice_content, image_idx, admin_idx, created_at)
+        VALUES (#{notice_subject}, #{notice_content}, #{image_idx}, #{admin_idx}, now())
+    </insert>
+
+    <select id="findNoticeDetail" resultType="com.ict.camping.admin.notices.vo.ANoticeVO">
+    SELECT 
+        n.*,
+        a.admin_idx,
+        u.id
+    FROM 
+        notices n
+    JOIN 
+        admins a ON n.admin_idx = a.admin_idx
+    JOIN 
+        users u ON a.user_idx = u.user_idx
+    WHERE
+        notice_idx = #{notice_idx}
+    </select>
+
+</mapper>

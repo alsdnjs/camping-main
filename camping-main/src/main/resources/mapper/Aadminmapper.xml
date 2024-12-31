@@ -36,4 +36,12 @@
         SELECT COUNT(*) FROM admins WHERE user_idx = #{user_idx}
     </select>
 
+    <!-- 특정 관리자 타입 조회 -->
+    <select id="checkManagerType" parameterType="String" resultType="com.ict.camping.admin.admin.vo.AdminVO">
+        SELECT ad.*, u.username, u.id, u.email, u.phone
+        FROM admins ad
+        JOIN users u ON ad.user_idx = u.user_idx
+        WHERE ad.user_idx = #{user_idx}
+    </select>
+
 </mapper>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD MyBatis Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ict.camping.scheduler.mapper.SchedulerMapper">
+  <update id="updateExpiredReservations">
+    UPDATE usage_history
+    SET action_type = '이용'
+    WHERE checkout &lt; CURDATE() AND action_type = '예약'
+  </update>
+</mapper>

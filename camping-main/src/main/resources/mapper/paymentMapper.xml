@@ -7,10 +7,10 @@
 <mapper namespace="com.ict.camping.domain.payment.mapper.PaymentMapper">
     <insert id="insertPayment" parameterType="com.ict.camping.domain.payment.vo.PaymentVO">
       INSERT INTO usage_history ( 
-            user_idx, contentId, action_type, action_date, payment_amount
+            user_idx, contentId, action_type, checkin, payment_amount, checkout
         )
         VALUES (
-            #{user_idx}, #{contentId}, #{action_type}, #{action_date}, #{payment_amount}
+            #{user_idx}, #{contentId}, #{action_type}, #{checkin}, #{payment_amount}, #{checkout}
         )
     </insert>
 

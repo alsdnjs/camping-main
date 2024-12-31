@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+ <!-- namespace는 반드시 mapper 위치로 설정해야 된다. -->
+<mapper namespace="com.ict.camping.domain.review.mapper.ReviewMapper">
+	<select id="getReviewList" parameterType="String" resultType="com.ict.camping.domain.review.vo.ReviewVO">
+		select * 
+		from camping_reviews 
+		where contentId = #{contentId}
+		ORDER BY created_at DESC
+	</select>
+	<delete id="getReviewDelete" parameterType="String">
+		delete from camping_reviews where review_idx = #{review_idx}
+	</delete>
+	<update id="getReviewUpdate" parameterType="ReviewVO">
+		update camping_reviews
+		set user_idx = #{user_idx}, rating = #{rating}, title = #{title}, content = #{content}, created_at = NOW(), filename = #{filename}
+		where review_idx = #{review_idx}
+	</update>
+	<insert id="getReviewWrite" parameterType="ReviewVO">
+        INSERT INTO camping_reviews (
+            contentId, user_idx, username, rating, title, content, filename, created_at
+        ) VALUES (
+            #{contentId}, #{user_idx}, #{username}, #{rating}, #{title}, #{content}, #{filename}, NOW()
+        )
+    </insert>
+	<select id="countReview" parameterType="String" resultType="Integer">
+		select count(*) from camping_reviews where contentId = #{contentId}
+	</select>
+</mapper>

@@ -59,8 +59,10 @@ public class SecurityConfig {
                       .requestMatchers("/oauth2/**").permitAll()
                       // 특정 URL에 인증없이 허용
                       .requestMatchers("/api/users/join", "/api/users/login", "/api/users/idCheck","/api/camping/**","/api/camping/sites/{contentId}",
-                              "/api/signup/sendVerificationEmail", "/api/signup/verifyEmail", "/api/sms/**", "api/users/profile" ,"/api/admin/**", "/api/member/**"
-                              ,  "/api/users/**", "/myPage/myUserInfo/passwordCheck", "/api/camping/payments")
+                              "/api/signup/sendVerificationEmail", "/api/signup/verifyEmail", "/api/sms/**", "api/users/profile" ,"/api/admin/**", "/api/member/**" ,"/api/meeting/**"
+                              ,"/api/like/**" ,"/api/review/**","/api/users/**", "/myPage/myUserInfo/passwordCheck", "/api/camping/payments", "/api/regular-meetings/hashtags","/api/regular-meetings/**"
+                              ,"/api/inquiry/**" ,"/api/notice/**", "/api/meetings", "/api/meetings/**"
+                              ,"/api/myPage/**" , "/api/myPage/getMyFavoriteCampingSites", "/api/myPage/deleteMyCampingSite")
                       .permitAll() 
                       // 나머지는 인증 필요
                       .anyRequest().authenticated())

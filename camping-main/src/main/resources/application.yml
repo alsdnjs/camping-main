@@ -82,7 +82,7 @@ spring:
 # http://localhost:8080/{파일명}
   web:
     resources:
-      static-locations: file:D:/upload
+      static-locations: file:D:/upload/
       # static-locations: classpath:/static/
 
 # twilio 문자 인증

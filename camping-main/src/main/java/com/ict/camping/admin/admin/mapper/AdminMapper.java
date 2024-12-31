@@ -13,4 +13,5 @@ public interface AdminMapper {
     int deleteAdmin(String admin_idx);
     int insertAdmin(AdminVO adminVO);
     int checkIdDuplicate(String user_idx);
+    AdminVO checkManagerType(String user_idx);
 }

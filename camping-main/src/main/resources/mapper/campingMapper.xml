@@ -6,7 +6,31 @@
 <!-- namespace는 반드시 mapper 위치로 설정해야 된다. -->
 <mapper namespace="com.ict.camping.domain.map.mapper.CampingMapper">
 <!--  모든 캠핑장 조회  -->
-<select id="findAllCampingSites" resultType="com.ict.camping.domain.map.vo.MapVO"> SELECT * FROM campingsites </select>
+<select id="findAllCampingSites" resultType="com.ict.camping.domain.map.vo.MapVO">
+    SELECT 
+        c.contentId,c.facltNm,c.intro,c.lineIntro,c.allar,c.bizrno,c.featureNm,c.induty,c.lctCl,c.doNm,c.sigunguNm,c.zipcode,c.addr1,c.mapX,c.mapY,c.direction,c.tel,c.homepage,c.sitedStnc,
+        c.siteMg1Width,c.siteMg2Width,c.siteMg3Width,c.siteMg1Virticl,c.siteMg2Virticl,c.siteMg3Virticl,c.siteBottomCl2,c.siteBottomCl3,c.siteBottomCl4,c.siteBottomCl5,c.sbrsCl,
+        c.posblFcltyCl,c.animalCmgCl,c.firstImageUrl,c.createdtime,c.siteBottomCl1,c.gnrlSiteCo,c.autoSiteCo,c.glampSiteCo,c.caravSiteCo,c.brazierCl,c.sbrsEtc,c.glampInnerFclty,c.caravInnerFclty,c.price,
+        -- 찜 개수
+        COALESCE(COUNT(l.like_idx), 0) AS likeCount,
+        -- 리뷰 개수
+        COALESCE(COUNT(r.review_idx), 0) AS reviewCount
+    FROM 
+        campingsites c
+    LEFT JOIN 
+        camping_likes l ON c.contentId = l.contentId
+    LEFT JOIN 
+        camping_reviews r ON c.contentId = r.contentId
+    GROUP BY 
+        c.contentId, c.facltNm, c.intro, c.lineIntro, c.allar, c.bizrno, c.featureNm,
+        c.induty, c.lctCl, c.doNm, c.sigunguNm, c.zipcode, c.addr1, c.mapX, c.mapY,
+        c.direction, c.tel, c.homepage, c.sitedStnc, c.siteMg1Width, c.siteMg2Width,
+        c.siteMg3Width, c.siteMg1Virticl, c.siteMg2Virticl, c.siteMg3Virticl,
+        c.siteBottomCl2, c.siteBottomCl3, c.siteBottomCl4, c.siteBottomCl5, c.sbrsCl,
+        c.posblFcltyCl, c.animalCmgCl, c.firstImageUrl, c.createdtime, c.siteBottomCl1,
+        c.gnrlSiteCo, c.autoSiteCo, c.glampSiteCo, c.caravSiteCo, c.brazierCl, c.sbrsEtc,
+        c.glampInnerFclty, c.caravInnerFclty, c.price 
+ </select>
 <!--  특정 캠핑장 조회  -->
 <select id="findCampingSiteByContentId" parameterType="String" resultType="com.ict.camping.domain.map.vo.MapVO"> SELECT * FROM campingsites WHERE contentId = #{contentId} </select>
 <!--  캠핑장 중복 확인  -->

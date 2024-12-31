@@ -69,14 +69,17 @@ public class AdminController {
     public boolean checkIdDuplicate(@RequestParam("user_idx") String user_idx) {
         boolean isDuplicate = adminService.isIdDuplicate(user_idx);
         if (isDuplicate) {
-            System.out.println("이미 존재");
+            System.out.println("존재하는 관리자");
         } else {
-            System.out.println("사용가능");
+            System.out.println("존재하지 않는 관리자");
         }
         return isDuplicate;
     }
     
-    
+    @GetMapping("/admins/check-type")
+    public AdminVO checkManagerType(@RequestParam("user_idx") String user_idx) {
+        return adminService.checkManagerType(user_idx);
+    }
 
 
     

@@ -40,5 +40,8 @@ public class AdminServiceImpl implements AdminService{
         return adminMapper.checkIdDuplicate(user_idx) > 0;
     }
 
-    
+    @Override
+    public AdminVO checkManagerType(String user_idx){
+        return adminMapper.checkManagerType(user_idx);
+    }
 }

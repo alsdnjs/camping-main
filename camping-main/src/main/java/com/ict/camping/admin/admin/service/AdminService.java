@@ -15,4 +15,6 @@ public interface AdminService {
     int insertAdmin(AdminVO adminVO);
     // 중복확인
     boolean isIdDuplicate(String user_idx);
+    // 관리자 종류 확인
+    AdminVO checkManagerType(String user_idx);
 } 

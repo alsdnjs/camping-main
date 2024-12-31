@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ict.camping.lighthningMeeting.mapper.LighthningMeetingMapper">
+
+    <!-- 번개 모임 전체 조회 (writer_id 포함) -->
+    <select id="selectAllMeetings" 
+            resultType="com.ict.camping.lighthningMeeting.vo.LighthningMeetingVO">
+        SELECT 
+            lm.post_idx,
+            lm.title,
+            lm.content,
+            lm.writer_idx,
+            u.id AS writer_id, <!-- 올바른 컬럼 이름으로 수정 -->
+            lm.meeting_date,
+            lm.meeting_location,
+            lm.created_at,
+            lm.personnel
+        FROM lighthning_meetings lm
+        LEFT JOIN users u ON lm.writer_idx = u.user_idx <!-- JOIN 유지 -->
+        ORDER BY lm.created_at DESC
+    </select>
+
+    <!-- 번개 모임 단일 조회 (writer_id 포함) -->
+    <select id="selectMeetingById"
+            parameterType="int"
+            resultType="com.ict.camping.lighthningMeeting.vo.LighthningMeetingVO">
+        SELECT 
+            lm.post_idx,
+            lm.title,
+            lm.content,
+            lm.writer_idx,
+            u.id AS writer_id, <!-- 올바른 컬럼 이름으로 수정 -->
+            lm.meeting_date,
+            lm.meeting_location,
+            lm.created_at,
+            lm.personnel
+        FROM lighthning_meetings lm
+        LEFT JOIN users u ON lm.writer_idx = u.user_idx <!-- JOIN 유지 -->
+        WHERE lm.post_idx = #{id}
+    </select>
+
+    <!-- 번개 모임 생성 -->
+    <insert id="insertMeeting" parameterType="com.ict.camping.lighthningMeeting.vo.LighthningMeetingVO"
+            useGeneratedKeys="true" keyProperty="post_idx" keyColumn="post_idx">
+        INSERT INTO lighthning_meetings (
+            title,
+            content,
+            writer_idx,
+            meeting_date,
+            meeting_location,
+            personnel
+        )
+        VALUES (
+            #{title},
+            #{content},
+            #{writer_idx},
+            #{meeting_date},
+            #{meeting_location},
+            #{personnel}
+        )
+    </insert>
+
+    <!-- 번개 모임 수정 -->
+    <update id="updateMeeting" parameterType="com.ict.camping.lighthningMeeting.vo.LighthningMeetingVO">
+        UPDATE lighthning_meetings
+        SET
+            title            = #{title},
+            content          = #{content},
+            meeting_date     = #{meeting_date},
+            meeting_location = #{meeting_location},
+            personnel        = #{personnel}
+        WHERE post_idx = #{post_idx}
+    </update>
+
+    <!-- 번개 모임 삭제 -->
+    <delete id="deleteMeeting" parameterType="int">
+        DELETE FROM lighthning_meetings
+        WHERE post_idx = #{id}
+    </delete>
+
+</mapper>

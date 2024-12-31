@@ -9,7 +9,7 @@ public class ResourceConfig implements WebMvcConfigurer{
 
   public void addResourceHandlers(ResourceHandlerRegistry registry){
     registry.addResourceHandler("/upload/**") // URL 경로
-            .addResourceLocations("file:D:/upload") // 실제 경로
+            .addResourceLocations("file:D:/upload/") // 실제 경로
             .setCachePeriod(3600); // 캐시 시간(초)
   }
 
