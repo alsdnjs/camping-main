@@ -1,5 +1,7 @@
 package com.ict.camping.domain.users.service;
 
+import java.util.List;
+
 import com.ict.camping.domain.users.vo.UsersVO;
 
 public interface UsersService {
@@ -13,4 +15,5 @@ public interface UsersService {
 
   public String getPasswordById(String id);
   public int updatePassword(String id, String password);
+  public int updateEmail(String id, String email);
 }

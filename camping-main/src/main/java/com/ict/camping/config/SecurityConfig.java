@@ -62,10 +62,10 @@ public class SecurityConfig {
                               "/api/signup/sendVerificationEmail", "/api/signup/verifyEmail", "/api/sms/**", "api/users/profile" ,"/api/admin/**", "/api/member/**" ,"/api/meeting/**"
                               ,"/api/like/**" ,"/api/review/**","/api/users/**", "/myPage/myUserInfo/passwordCheck", "/api/camping/payments", "/api/regular-meetings/hashtags","/api/regular-meetings/**"
                               ,"/api/inquiry/**" ,"/api/notice/**", "/api/meetings", "/api/meetings/**"
-                              ,"/api/myPage/**" , "/api/myPage/getMyFavoriteCampingSites", "/api/myPage/deleteMyCampingSite")
+                              ,"/api/myPage/**", "/api/myPage/getInquiryHistory")
                       .permitAll() 
                       // 나머지는 인증 필요
-                      .anyRequest().authenticated())
+                      .anyRequest().permitAll())
 
               // oauth2 Login 설정
               // successHandler = 로그인 성공 시 호출

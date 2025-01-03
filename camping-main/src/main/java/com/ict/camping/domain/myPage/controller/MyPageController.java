@@ -13,6 +13,8 @@ import com.ict.camping.common.util.JwtUtil;
 import com.ict.camping.domain.auth.vo.DataVO;
 import com.ict.camping.domain.myPage.service.MyPageService;
 import com.ict.camping.domain.myPage.vo.CampingSiteVO;
+import com.ict.camping.domain.myPage.vo.InquiryVO;
+import com.ict.camping.domain.myPage.vo.MyReviewVO;
 import com.ict.camping.domain.myPage.vo.UsageHistoryVO;
 import com.ict.camping.domain.users.service.UsersService;
 
@@ -102,11 +104,61 @@ public class MyPageController {
             System.out.println(list);
             dataVO.setData(list);
             dataVO.setSuccess(true);
+
         } catch (Exception e) {
             dataVO.setSuccess(false);
         }
         return dataVO;
     }
+
+    // 1대1문의 리스트 가져오기
+    @GetMapping("/getInquiryHistory")
+    public DataVO getInquiryHistory(@RequestHeader("Authorization") String authorizationHeader) {
+        DataVO dataVO = new DataVO();
+        try {
+            // 사용자 ID 추출
+            String userId = getIdFromToken(authorizationHeader, dataVO);
+            // 사용자 IDX 가져오기
+            String user_idx = usersService.getUserIdxById(userId);
+
+            List<InquiryVO> list = myPageService.getMyInquiryHistory(user_idx);
+            System.out.println(list);
+            dataVO.setData(list);
+            dataVO.setSuccess(true);
+
+        } catch (Exception e) {
+            dataVO.setSuccess(false);
+        }
+        return dataVO;
+    }
+
+    @GetMapping("/getMyReviews")
+    public DataVO getMyReviews(@RequestHeader("Authorization") String authorizationHeader) {
+        DataVO dataVO = new DataVO();
+        try {
+            // 사용자 ID 추출
+            String userId = getIdFromToken(authorizationHeader, dataVO);
+            // 사용자 IDX 가져오기
+            String user_idx = usersService.getUserIdxById(userId);
+
+            List<MyReviewVO> list = myPageService.getMyReviews(user_idx);
+            System.out.println(list);
+            dataVO.setData(list);
+            dataVO.setSuccess(true);
+
+        } catch (Exception e) {
+            dataVO.setSuccess(false);
+        }
+        return dataVO;
+    }
+    
+    
+
+    // @GetMapping("/getCampingLikesCount")
+    // public String getCampingLikesCount(@RequestParam String param) {
+        
+    // }
+    
     
 
     public String getIdFromToken(String authorizationHeader, DataVO dataVO){
@@ -123,5 +175,4 @@ public class MyPageController {
         System.out.println("유저 아이디 : "+  userId);
         return userId;
     }
-
 }

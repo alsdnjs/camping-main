@@ -37,7 +37,7 @@
 
     <!-- 사업자 정보 업데이트 -->
     <update id="updateBusiness" parameterType="com.ict.camping.admin.members.vo.AOperatorVO">
-        UPDATE business
+        UPDATE business_users
         SET business_name = #{business_name},
             business_number = #{business_number},
             started_date = #{started_date},
@@ -66,7 +66,7 @@
             u.address AS address,
             u.join_date AS join_date
         FROM 
-            business b
+            business_users b
         LEFT JOIN 
             users u
         ON 
@@ -94,7 +94,7 @@
             u.address AS address,
             u.join_date AS join_date
         FROM 
-            business b
+            business_users b
         LEFT JOIN 
             users u
         ON 
@@ -111,13 +111,29 @@
 
     <!-- 사업자 추가 -->
     <insert id="insertOperators" parameterType="com.ict.camping.admin.members.vo.AOperatorVO">
-        INSERT INTO business (user_idx, business_name, business_number, contentId, started_date)
+        INSERT INTO business_users (user_idx, business_name, business_number, contentId, started_date)
         VALUES (#{user_idx}, #{business_name}, #{business_number}, #{contentId}, #{started_date})
     </insert>
 
     <!-- 사업자 중복 확인 -->
     <select id="checkUserDuplicate" parameterType="String" resultType="int">
-        SELECT COUNT(*) FROM business WHERE user_idx = #{user_idx}
+        SELECT COUNT(*) FROM business_users WHERE user_idx = #{user_idx}
     </select>
 
+    <!-- 특정 user_idx에 해당하는 business_idx 조회 -->
+    <select id="getBusinessIdxByUserIdx" parameterType="String" resultType="int">
+        SELECT business_idx 
+        FROM business_users 
+        WHERE user_idx = #{user_idx}
+    </select>
+
+    <!-- 사업자 제거 -->
+    <delete id="deleteOperator" parameterType="String">
+        DELETE FROM business_users WHERE business_idx = #{business_idx}
+    </delete>
+
+    <!-- 사용자 제거 -->
+    <delete id="deleteUser" parameterType="String">
+        DELETE FROM users WHERE user_idx = #{user_idx}
+    </delete>
 </mapper>

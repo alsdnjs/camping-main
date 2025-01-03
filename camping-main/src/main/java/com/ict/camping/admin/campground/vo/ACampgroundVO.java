@@ -1,4 +1,4 @@
-package com.ict.camping.domain.map.vo;
+package com.ict.camping.admin.campground.vo;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -9,8 +9,13 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MapVO {
-    private int contentId;
+public class ACampgroundVO {
+    private int camp_request_idx;
+    private String content;
+    private int business_idx;
+    private String title;
+    private String request_answer;
+    
     private String facltNm;
     private String intro;
     private String lineIntro;

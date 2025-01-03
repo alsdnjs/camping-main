@@ -13,4 +13,5 @@ public class ALightningCommentVO {
     private int writer_idx;
     private String content;
     private String created_at;
+    private int parent_id;
 }

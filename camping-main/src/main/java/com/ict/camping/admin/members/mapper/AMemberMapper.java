@@ -28,4 +28,10 @@ public interface AMemberMapper {
     int insertOperators(AOperatorVO operatorVO);
 
     int checkUserDuplicate(String user_idx);
+
+    int deleteOperator(String business_idx);
+
+    int deleteUser(String user_idx);
+
+    int getBusinessIdxByUserIdx(String user_idx);
 }

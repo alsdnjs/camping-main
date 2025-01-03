@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace는 반드시 mapper 위치로 설정해야 된다. -->
+<mapper namespace="com.ict.camping.admin.campground.mapper.ACampgroundMapper">
+<!--  모든 캠핑장 조회  -->
+<select id="findAllCampgroundNotice" resultType="com.ict.camping.admin.campground.vo.ACampgroundVO"> 
+SELECT * FROM camp_request
+</select>
+<!--  특정 캠핑장 조회  -->
+<select id="findCampgroundNoticeById" parameterType="String" resultType="com.ict.camping.admin.campground.vo.ACampgroundVO"> 
+SELECT * FROM camp_request WHERE camp_request_idx = #{camp_request_idx} 
+</select>
+<!--  캠핑장 데이터 삽입  -->
+<insert id="insertCampgroundNotice" parameterType="com.ict.camping.admin.campground.vo.ACampgroundVO"> 
+INSERT INTO camp_request ( title, content, business_idx, facltNm, intro, lineIntro, allar, bizrno, featureNm, induty, 
+lctCl, doNm, sigunguNm, zipcode, addr1, direction, tel, homepage, sitedStnc, siteMg1Width, 
+siteMg2Width, siteMg3Width, siteMg1Virticl, siteMg2Virticl, siteMg3Virticl, siteBottomCl1, 
+siteBottomCl2, siteBottomCl3, siteBottomCl4, siteBottomCl5, sbrsCl, posblFcltyCl, 
+animalCmgCl, firstImageUrl, createdtime, gnrlSiteCo, autoSiteCo, glampSiteCo, caravSiteCo, 
+brazierCl, sbrsEtc, glampInnerFclty, caravInnerFclty, price ) 
+VALUES 
+( #{title}, #{content}, #{business_idx}, #{facltNm}, #{intro}, #{lineIntro}, #{allar}, #{bizrno}, #{featureNm}, #{induty}, #{lctCl}, 
+#{doNm}, #{sigunguNm}, #{zipcode}, #{addr1}, #{direction}, #{tel}, #{homepage}, #{sitedStnc}, 
+#{siteMg1Width}, #{siteMg2Width}, #{siteMg3Width}, #{siteMg1Virticl}, #{siteMg2Virticl}, #{siteMg3Virticl}, 
+#{siteBottomCl1}, #{siteBottomCl2}, #{siteBottomCl3}, #{siteBottomCl4}, #{siteBottomCl5}, #{sbrsCl}, 
+#{posblFcltyCl}, #{animalCmgCl}, #{firstImageUrl}, NOW(), #{gnrlSiteCo}, #{autoSiteCo}, #{glampSiteCo}, 
+#{caravSiteCo}, #{brazierCl}, #{sbrsEtc}, #{glampInnerFclty}, #{caravInnerFclty}, #{price} ) 
+</insert>
+<!-- 답변 업데이트 -->
+    <update id="updateRequestAnswer">
+        UPDATE camp_request
+        SET request_answer = #{request_answer}
+        WHERE camp_request_idx = #{camp_request_idx}
+    </update>
+    
+</mapper>
+
+
+
+
+

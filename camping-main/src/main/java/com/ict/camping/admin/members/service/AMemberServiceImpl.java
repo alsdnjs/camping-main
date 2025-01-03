@@ -71,5 +71,22 @@ public class AMemberServiceImpl implements AMemberService{
         return memberMapper.updateBusiness(operatorVO);
     }
 
+    @Override
+    public boolean deleteOperator(String business_idx) {
+        int rowsAffected = memberMapper.deleteOperator(business_idx);
+        return rowsAffected > 0;
+    }
+
+    @Override
+    public boolean deleteUser(String user_idx) {
+        int rowsAffected = memberMapper.deleteUser(user_idx);
+        return rowsAffected > 0;
+    }
+
+    @Override
+    public int getBusinessIdxByUserIdx(String user_idx) {
+        return memberMapper.getBusinessIdxByUserIdx(user_idx);
+    }
+
     
 }

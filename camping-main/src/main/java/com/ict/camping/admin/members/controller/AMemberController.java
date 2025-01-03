@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -74,6 +75,12 @@ public class AMemberController {
         return memberService.getOperatorDetail(business_idx);
     }
 
+    @GetMapping("/operators/check/{user_idx}")
+    public int getBusinessIdx(@PathVariable("user_idx") String user_idx) {
+        System.out.println("잘 넘어오나 : " + user_idx);
+        return memberService.getBusinessIdxByUserIdx(user_idx);
+    }
+
     @GetMapping("/operators/check-user")
     public boolean cheeckBusinessDuplicate(@RequestParam("user_idx") String user_idx) {
         boolean isDuplicate = memberService.isBuisnessDuplicate(user_idx);
@@ -83,6 +90,38 @@ public class AMemberController {
             System.out.println("사용가능");
         }
         return isDuplicate;
+    }
+
+    @DeleteMapping("/operators/delete/{business_idx}")
+    public ResponseEntity<String> deleteOperator(@PathVariable("business_idx") String business_idx){
+        try {
+            // 댓글 삭제 서비스 호출
+            boolean isDeleted = memberService.deleteOperator(business_idx);
+            if (isDeleted) {
+                return ResponseEntity.ok("사업자가 성공적으로 삭제되었습니다.");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("삭제하려는 사업자가 존재하지 않습니다.");
+            }
+        } catch (Exception e) {
+            // 예외 처리
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("사업자 삭제 중 오류가 발생했습니다.");
+        }
+    }
+
+    @DeleteMapping("/members/delete/{user_idx}")
+    public ResponseEntity<String> deleteMember(@PathVariable("user_idx") String user_idx){
+        try {
+            // 댓글 삭제 서비스 호출
+            boolean isDeleted = memberService.deleteUser(user_idx);
+            if (isDeleted) {
+                return ResponseEntity.ok("회원이 성공적으로 삭제되었습니다.");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("삭제하려는 회원이 존재하지 않습니다.");
+            }
+        } catch (Exception e) {
+            // 예외 처리
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원 삭제 중 오류가 발생했습니다.");
+        }
     }
     
     

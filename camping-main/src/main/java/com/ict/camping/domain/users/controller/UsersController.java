@@ -12,6 +12,10 @@ import com.ict.camping.domain.users.vo.UsersVO;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -259,38 +263,55 @@ public class UsersController {
         dataVO.setSuccess(true);
         dataVO.setMessage("비밀번호 맞음.");
       }
-
-      return dataVO;
     } catch (Exception e) {
       dataVO.setSuccess(false);
       dataVO.setMessage("error");
-      return dataVO;
     }
+    return dataVO;
+  }
+
+  // 이메일 변경
+  @PostMapping("/updateEmail")
+  public DataVO updateEmail(@RequestBody Map<String, String> request, @RequestHeader("Authorization") String authorizationHeader){
+    DataVO dataVO = new DataVO();
+    String email = request.get("email"); // "email" 키로 값을 가져옴
+    System.out.println(email);
+    try {
+      // 토큰 인증 및 아이디 추출
+      String userId = getIdFromToken(authorizationHeader, dataVO);
+
+      // DB에서 비밀번호 변경   
+      int result = service.updateEmail(userId, email);
+      System.out.println(result);
+      if(result > 0){
+        dataVO.setSuccess(true);
+        dataVO.setMessage("이메일 변경에 성공했습니다.");
+      } else {
+        dataVO.setSuccess(false);
+        dataVO.setMessage("이메일 변경에 실패했습니다.");
+      }
+    } catch(Exception e){
+      dataVO.setSuccess(false);
+      dataVO.setMessage("error : " + e );
+    }
+    return dataVO;
   }
 
   // 비밀번호 변경
   @PostMapping("/updatePassword")
   public DataVO updatePassword(@RequestBody String password, @RequestHeader("Authorization") String authorizationHeader){
     DataVO dataVO = new DataVO();
-    System.out.println("비밀번호 : " + password);
-    String newEncodedPassword = passwordEncoder.encode(password); // 비밀번호 암호화
+
+
+    // 비밀번호 암호화
+    String encodedPassword = passwordEncoder.encode(password);
+
     try {
-      // 토큰 추출
-      String token = authorizationHeader.replace("Bearer ", "");
-      System.out.println("토큰 : " + token);
-      // 토큰 검증
-      if (!jwtUtil.validateToken(token)) {
-        dataVO.setSuccess(false);
-        dataVO.setMessage("유효하지 않은 토큰입니다.");
-        return dataVO;
-      }
-      
-      // 사용자 ID 추출
-      String userId = jwtUtil.getUserIdFromToken(token);
-      System.out.println("유저 아이디: "+  userId);
+      // 토큰 인증 및 아이디 추출
+      String userId = getIdFromToken(authorizationHeader, dataVO);
 
       // DB에서 비밀번호 변경
-      int result = service.updatePassword(userId, newEncodedPassword);
+      int result = service.updatePassword(userId, encodedPassword);
       System.out.println(result);
       if(result > 0){
         dataVO.setSuccess(true);
@@ -299,11 +320,55 @@ public class UsersController {
         dataVO.setSuccess(false);
         dataVO.setMessage("비밀번호 변경에 실패했습니다.");
       }
-      return dataVO;
     } catch(Exception e){
       dataVO.setSuccess(false);
       dataVO.setMessage("error : " + e );
-      return dataVO;
     }
+    return dataVO;
   }
+
+  @PostMapping("/updatePhone")
+  public DataVO updatePhone(@RequestBody Map<String, String> request, @RequestHeader("Authorization") String authorizationHeader) {
+    DataVO dataVO = new DataVO();
+    String phone = request.get("phone"); // "email" 키로 값을 가져옴
+    System.out.println(phone);
+
+    try {
+      // 토큰 인증 및 아이디 추출
+      String userId = getIdFromToken(authorizationHeader, dataVO);
+
+      // DB에서 비밀번호 변경
+      int result = service.updatePassword(userId, phone);
+      if(result > 0){
+        dataVO.setSuccess(true);
+        dataVO.setMessage("핸드폰 번호 변경에 성공했습니다.");
+      } else {
+        dataVO.setSuccess(false);
+        dataVO.setMessage("핸드폰 번호 변경에 실패했습니다.");
+      }
+    } catch (Exception e) {
+      dataVO.setSuccess(false);
+      dataVO.setMessage("error : " + e );
+    }
+      return dataVO;
+  }
+  
+
+  public String getIdFromToken(String authorizationHeader, DataVO dataVO){
+    // 토큰 추출
+    String token = authorizationHeader.replace("Bearer ", "");
+    // 토큰 검증
+    if (!jwtUtil.validateToken(token)) {
+        dataVO.setSuccess(false);
+        dataVO.setMessage("유효하지 않은 토큰입니다.");
+        return "";
+    }
+    // 사용자 ID 추출
+    String userId = jwtUtil.getUserIdFromToken(token);
+    System.out.println("유저 아이디 : "+  userId);
+    return userId;
+}
+
+
+  
 }

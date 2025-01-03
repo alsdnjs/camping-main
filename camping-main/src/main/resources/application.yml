@@ -80,15 +80,11 @@ spring:
 
 # 정적 파일(이미지, css, js 등)을 URL로 접근할 수 있도록 설정하는 옵션
 # http://localhost:8080/{파일명}
-  web:
-    resources:
-      static-locations: file:D:/upload/
-      # static-locations: classpath:/static/
-
+ 
 # twilio 문자 인증
 twilio:
   account-sid: ACd5f9a1f5ac6f9db9d9afe2a7cb046c1b
-  auth-token: dbc9319f96d1ab6f3068414bc957f184
+  auth-token: dfad46fc4621945acceb30a8cb07381b
   phone-number: +12184344815
 
 server:
@@ -113,4 +109,9 @@ logging:
     org.springframework.mail: DEBUG
 
 file:
-  upload-dir: D:/upload
+  upload-dir: C:/Users/5/Desktop/camping-main/camping-main/src/main/resources/images/
+
+servlet:
+  multipart:
+    max-file-size: 50MB # 업로드 가능한 파일의 최대 크기
+    max-request-size: 50MB # 요청 본문의 최대 크기

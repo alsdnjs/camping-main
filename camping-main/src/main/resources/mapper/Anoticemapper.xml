@@ -10,33 +10,97 @@
     SELECT 
         n.*,
         a.admin_idx,
-        u.id -- users 테이블의 id 컬럼
+        u.id,
+        f.file_idx,
+        f.file_name,
+        f.file_path,
+        f.file_size,
+        f.file_type
     FROM 
         notices n
     JOIN 
         admins a ON n.admin_idx = a.admin_idx
     JOIN 
         users u ON a.user_idx = u.user_idx
+    LEFT JOIN 
+        files f ON n.image_idx = f.file_idx
     </select>
+
+    <select id="findAllPopups" resultType="com.ict.camping.admin.notices.vo.APopupVO">
+    SELECT 
+        p.*,
+        a.admin_idx,
+        u.id,
+        f.file_idx,
+        f.file_name,
+        f.file_path,
+        f.file_size,
+        f.file_type
+    FROM 
+        popup p
+    JOIN 
+        admins a ON p.admin_idx = a.admin_idx
+    JOIN 
+        users u ON a.user_idx = u.user_idx
+    LEFT JOIN 
+        files f ON p.file_idx = f.file_idx
+</select>
 
     <insert id="insertNotice" parameterType="com.ict.camping.admin.notices.vo.ANoticeVO">
         INSERT INTO notices (notice_subject, notice_content, image_idx, admin_idx, created_at)
         VALUES (#{notice_subject}, #{notice_content}, #{image_idx}, #{admin_idx}, now())
     </insert>
 
+    <insert id="insertPopup" parameterType="com.ict.camping.admin.notices.vo.APopupVO">
+        INSERT INTO popup (file_idx, popup_name, popup_content, admin_idx, height, width, left_space, top_space, created_at, is_hidden)
+        VALUES (#{file_idx}, #{popup_name}, #{popup_content}, #{admin_idx}, #{height}, #{width}, #{left_space}, #{top_space}, now(), #{is_hidden})
+    </insert>
+
     <select id="findNoticeDetail" resultType="com.ict.camping.admin.notices.vo.ANoticeVO">
     SELECT 
         n.*,
         a.admin_idx,
-        u.id
+        u.id,
+        f.file_idx,
+        f.file_name,
+        f.file_path,
+        f.file_size,
+        f.file_type
     FROM 
         notices n
     JOIN 
         admins a ON n.admin_idx = a.admin_idx
     JOIN 
         users u ON a.user_idx = u.user_idx
+    LEFT JOIN 
+        files f ON n.image_idx = f.file_idx
     WHERE
         notice_idx = #{notice_idx}
     </select>
+
+    <delete id="deleteNotice" parameterType="String">
+        delete from notices where notice_idx = #{notice_idx}
+    </delete>
+
+    <delete id="deletePopup" parameterType="String">
+        delete from popup where popup_idx = #{popup_idx}
+    </delete>
+    
+    <update id="updatePopupVisibility" parameterType="com.ict.camping.admin.notices.vo.APopupVO">
+        UPDATE popup
+        SET is_hidden = #{is_hidden}
+        WHERE popup_idx = #{popup_idx};
+    </update>
+
+    <update id="updateNotice" parameterType="com.ict.camping.admin.notices.vo.ANoticeVO">
+    UPDATE notices
+    SET 
+        notice_subject = #{notice_subject},
+        notice_content = #{notice_content},
+        admin_idx = #{admin_idx},
+        created_at = now()
+    WHERE notice_idx = #{notice_idx}
+    </update>
+
 
 </mapper>

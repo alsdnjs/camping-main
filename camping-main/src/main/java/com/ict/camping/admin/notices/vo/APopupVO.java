@@ -7,14 +7,17 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ANoticeVO {
-    private int notice_idx;
-    private String notice_subject;
-    private String notice_content;
-    private int image_idx;
+public class APopupVO {
+    private int popup_idx;
+    private String popup_content;
     private int admin_idx;
+    private int height;
+    private int width;
+    private int left_space;
+    private int top_space;
     private String created_at;
-    private String id;
+    private String is_hidden;
+    private String popup_name;
 
     // join
     private int file_idx;
@@ -23,4 +26,5 @@ public class ANoticeVO {
     private int file_size;
     private String file_type;
     private String type;
+    private String id;
 }

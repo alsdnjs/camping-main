@@ -20,14 +20,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import com.ict.camping.domain.map.service.CampingService;
 import com.ict.camping.domain.map.vo.MapVO;
 
 
 import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -77,24 +75,20 @@ public class CampingController {
         if (formData.getFacltNm() == null || formData.getFacltNm().isEmpty()) {
             return ResponseEntity.badRequest().body("캠핑장 이름은 필수 입력 값입니다.");
         }
-
         // 파일 처리
         if (file != null && !file.isEmpty()) {
             UUID uuid = UUID.randomUUID();
             String f_name = uuid + "_" + file.getOriginalFilename();
             formData.setFirstImageUrl(f_name);
-
-            String path = "D:\\upload";
+            String path = "C:\\Users\\5\\Desktop\\camping-main\\camping-main\\src\\main\\resources\\images";
             File uploadDir = new File(path);
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();
             }
-
             file.transferTo(new File(uploadDir, f_name));
         } else {
             formData.setFirstImageUrl(null);
         }
-
         // 데이터 삽입
         int result = campingService.insertCampingSite(formData);
 
@@ -102,10 +96,8 @@ public class CampingController {
             System.err.println("캠핑장 데이터 삽입 실패");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("캠핑장 데이터 삽입 실패");
         }
-
         System.out.println("캠핑장 데이터 삽입 성공");
         return ResponseEntity.ok("캠핑장 데이터 삽입 성공");
-
     } catch (Exception e) {
         e.printStackTrace();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("오류 발생: " + e.getMessage());
@@ -123,7 +115,7 @@ public class CampingController {
         // 파일이 존재하는 경우에만 처리
         if (file != null && !file.isEmpty()) {
             String originalFileName = file.getOriginalFilename();
-            String filePath = "D:/upload/" + originalFileName;
+            String filePath = "C:\\Users\\5\\Desktop\\camping-main\\camping-main\\src\\main\\resources\\images" + originalFileName;
             file.transferTo(new File(filePath));
             formData.setFirstImageUrl(originalFileName);
         }

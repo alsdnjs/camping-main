@@ -12,9 +12,10 @@ public class AReservationVO {
     private int user_idx;
     private int contentId;
     private String action_type;
-    private String action_date;
+    private String checkin;
     private String created_at;
     private int payment_amount;
+    private String checkout;
 
     // join
     private String username;

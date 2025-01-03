@@ -16,7 +16,7 @@
     </select>
 
     <delete id="deleteMyCampingSite" parameterType="map">
-        DELETE FROM camping_likes  
+        DELETE FROM camping_likes
         WHERE user_idx = #{user_idx}
         AND contentId = #{contentId}
     </delete>
@@ -25,5 +25,23 @@
         SELECT c.facltNm, u.* FROM usage_history u JOIN campingsites c
         ON c.contentId = u.contentId
         WHERE user_idx = #{user_idx}
+    </select>
+
+    <select id="getMyInquiryHistory" parameterType="String" resultType="InquiryVO">
+        SELECT * FROM inquiry i
+        LEFT JOIN files f ON i.file_idx = f.file_idx
+        LEFT JOIN inquiry_answer a ON i.inquiry_idx = a.inquiry_idx
+        WHERE user_idx = #{user_idx}
+    </select>
+
+    <select id="getCampingLikesCount">
+        SELECT COUNT(*) FROM camping_likes WHERE contentId = #{contentId}
+    </select>
+
+    <select id="getMyReviews" parameterType="String" resultType="MyReviewVO">
+        SELECT r.*, f.file_name, f.file_path, c.facltNm, c.firstImageUrl FROM camping_reviews r
+        LEFT JOIN files f ON r.file_idx = f.file_idx
+        LEFT JOIN campingsites c ON r.contentId = c.contentId
+        WHERE user_idx = #{user_idx};
     </select>
 </mapper>

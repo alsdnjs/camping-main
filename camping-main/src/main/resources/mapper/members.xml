@@ -84,6 +84,9 @@
         SET password = #{password}
         WHERE id = #{id}
     </update>
-
-
+    <update id="updateEmail" parameterType="map">
+        UPDATE users
+        SET email = #{email}
+        WHERE id = #{id}
+    </update>
 </mapper>

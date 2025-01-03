@@ -12,7 +12,8 @@
             u.username,
             cs.facltNm,
             uh.action_type,
-            uh.action_date,
+            uh.checkin,
+            uh.checkout,
             uh.payment_amount,
             uh.created_at
         FROM 
@@ -22,7 +23,7 @@
         JOIN 
             campingsites cs ON uh.contentId = cs.contentId
         ORDER BY 
-            uh.action_date DESC
+            uh.checkin DESC
     </select>
 
     <!-- 특정 이용 내역 상세 조회 -->
@@ -32,7 +33,8 @@
             u.username,
             cs.facltNm,
             uh.action_type,
-            uh.action_date,
+            uh.checkin,
+            uh.checkout,
             uh.payment_amount,
             uh.created_at
         FROM 

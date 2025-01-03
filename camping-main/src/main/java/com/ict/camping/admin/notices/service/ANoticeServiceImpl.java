@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.ict.camping.admin.notices.mapper.ANoticeMapper;
 import com.ict.camping.admin.notices.vo.ANoticeVO;
+import com.ict.camping.admin.notices.vo.APopupVO;
 
 
 @Service
@@ -30,7 +31,37 @@ public class ANoticeServiceImpl implements ANoticeService{
         return noticeMapper.findNoticeDetail(notice_idx);
     }
 
+    @Override
+    public boolean deleteNotice(String notice_idx) {
+        int rowsAffected = noticeMapper.deleteNotice(notice_idx);
+        return rowsAffected > 0;
+    }
 
+    @Override
+    public int updateNotice(ANoticeVO answerVO) {
+        return noticeMapper.updateNotice(answerVO);
+    }
+
+    @Override
+    public List<APopupVO> getAllPopups() {
+        return noticeMapper.findAllPopups();
+    }
+
+    @Override
+    public int insertPopup(APopupVO popupVO) {
+        return noticeMapper.insertPopup(popupVO);
+    }
+
+    @Override
+    public boolean deletePopup(String popup_idx) {
+       int rowsAffected = noticeMapper.deletePopup(popup_idx);
+       return rowsAffected > 0;
+    }
+
+    @Override
+    public int updatePopupVisibility(APopupVO popupVO) {
+        return noticeMapper.updatePopupVisibility(popupVO);
+    }
 
     
 }

@@ -13,7 +13,7 @@ public class AInquiryVO {
     private String subject;
     private String content;
     private String created_at;
-    private String f_name;
+    private int file_idx;
 
     // join
     private String username;

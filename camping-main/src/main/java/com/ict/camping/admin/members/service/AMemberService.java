@@ -28,4 +28,10 @@ public interface AMemberService {
     boolean isBuisnessDuplicate(String user_idx);
     // 사업자 수정
     int updateBusiness(AOperatorVO operatorVO);
+    // 사업자 삭제
+    boolean deleteOperator(String business_idx);
+    // 회원 삭제
+    boolean deleteUser(String user_idx);
+    // 회원 idx로 사업자 idx 불러오기
+    int getBusinessIdxByUserIdx(String user_idx);
 } 
