@@ -44,4 +44,24 @@
         LEFT JOIN campingsites c ON r.contentId = c.contentId
         WHERE user_idx = #{user_idx};
     </select>
+
+    <!-- useGeneratedKeys="true": 이 속성은 삽입된 데이터에 대해 자동으로 생성된 키 값을 반환하도록 MyBatis에 지시합니다. -->
+    <!-- keyProperty="idx": idx는 반환된 값이 저장될 FileVO 객체의 프로퍼티입니다. -->
+    <insert id="setFile" parameterType="FileVO"  useGeneratedKeys="true" keyProperty="file_idx">
+        INSERT INTO files (file_name, file_path, file_size, file_type, type, created_at)
+        VALUES (#{file_name}, #{file_path}, #{file_size}, #{file_type}, #{type}, NOW())
+    </insert>
+    <insert id="insertInquiry" parameterType="InquiryVO">
+        INSERT INTO inquiry(user_idx, subject, content, created_at, file_idx)
+                VALUES (#{user_idx}, #{subject}, #{content}, NOW(), #{file_idx})
+    </insert>
+    <update id="updateProfileImage" parameterType="map">
+        UPDATE users
+        SET file_idx = #{file_idx}
+        WHERE user_idx = #{user_idx}
+    </update>
+    <delete id="deleteImageFile" parameterType="String">
+        DELETE FROM files
+        WHERE file_name = #{file_name}
+    </delete>
 </mapper>

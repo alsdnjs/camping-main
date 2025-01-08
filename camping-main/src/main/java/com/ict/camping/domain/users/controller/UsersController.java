@@ -12,7 +12,10 @@ import com.ict.camping.domain.users.vo.UsersVO;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +44,7 @@ public class UsersController {
   private PasswordEncoder passwordEncoder;
   @Autowired
   private MyUserDetailService myUserDetailService;
+
 
   // 회원가입
   @PostMapping("/join")
@@ -77,14 +81,14 @@ public class UsersController {
       System.out.println("password : " + uvo.getPassword());
       try {
         // 사용자 정보 조회
-        UsersVO usersVO = service.getUserById(uvo.getId());
-        System.out.println(usersVO);
-
+        UsersVO usersVO = service.getUsersById(uvo.getId());
+        
         if(usersVO == null){
           dataVO.setSuccess(false);
           dataVO.setMessage("존재하지 않는 아이디입니다.");
           return dataVO;
         }
+        System.out.println(usersVO);
         
         // 비밀번호 검증 받기
         if(!passwordEncoder.matches(uvo.getPassword(), usersVO.getPassword())){
@@ -92,6 +96,35 @@ public class UsersController {
           dataVO.setMessage("비밀번호가 일치하지 않습니다.");
           return dataVO;
         }
+
+        System.out.println(usersVO);
+      try {
+
+        System.out.println("제제회원");
+        // 제제된 회원 찾아내기
+        String warn = usersVO.getWarn();
+        System.out.println(warn);
+        if (usersVO.getWarn() != null) {
+          // 제제 시작일
+          String warnStart = usersVO.getWarn_start_at();
+          // data형태 지정
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+          // 문자열을 LocalDate로 변환
+          LocalDate startDate = LocalDate.parse(warnStart, formatter);
+          // 7일 후 계산
+          LocalDate endDate = startDate.plusDays(7);
+          // 제제 사유
+          String cause = usersVO.getWarn_cause();
+          
+          String message = "당신은 " + cause + "의 사유로 " + startDate + "부터" + endDate + "까지 이용이 정지됩니다.";
+          System.out.println(message);
+          dataVO.setMessage(message);
+          dataVO.setSuccess(false);
+          return dataVO;
+        }
+      } catch (NumberFormatException e) {
+          System.out.println("Warn is not a valid number: " + usersVO.getWarn());
+      }
 
         // JWT 토큰 생성 및 전송
         String token = jwtUtil.generateToken(uvo.getId());
@@ -155,23 +188,10 @@ public class UsersController {
     DataVO dataVO = new DataVO();
 
     try {
-        // 토큰 추출
-        String token = authorizationHeader.replace("Bearer ", "");
-        System.out.println("토큰 : " + token);
-
-        // 토큰 검증
-        if (!jwtUtil.validateToken(token)) {
-            dataVO.setSuccess(false);
-            dataVO.setMessage("유효하지 않은 토큰입니다.");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(dataVO);
-        }
-
-        // 사용자 ID 추출
-        String userId = jwtUtil.getUserIdFromToken(token);
-        System.out.println("유저 아이디: "+  userId);
+        String userId = getIdFromToken(authorizationHeader, dataVO);
 
         // 사용자 정보 조회
-        UsersVO userProfile = service.getUserById(userId);
+        UsersVO userProfile = service.getUsersById(userId);
         System.out.println(userProfile);
 
         if (userProfile != null) {
@@ -213,7 +233,7 @@ public class UsersController {
       System.out.println("유저 아이디: "+  userId);
 
       // 사용자 정보 조회
-      UsersVO userProfile = service.getUserById(userId);
+      UsersVO userProfile = service.getUsersById(userId);
       System.out.println(userProfile);
 
       if (userProfile != null) {
@@ -299,10 +319,11 @@ public class UsersController {
 
   // 비밀번호 변경
   @PostMapping("/updatePassword")
-  public DataVO updatePassword(@RequestBody String password, @RequestHeader("Authorization") String authorizationHeader){
+  public DataVO updatePassword(
+    @RequestBody String password,
+    @RequestHeader("Authorization") String authorizationHeader){
     DataVO dataVO = new DataVO();
-
-
+    
     // 비밀번호 암호화
     String encodedPassword = passwordEncoder.encode(password);
 
@@ -323,20 +344,46 @@ public class UsersController {
     } catch(Exception e){
       dataVO.setSuccess(false);
       dataVO.setMessage("error : " + e );
+      System.out.println(e);
     }
     return dataVO;
   }
+
+  @PostMapping("/snsLoginSetPassword")
+  public DataVO snsLoginSetPassword( @RequestHeader("Authorization") String authorizationHeader, @RequestBody String password) {
+    DataVO dataVO = new DataVO();
+    System.out.println(authorizationHeader);
+    // 비밀번호 암호화
+    String encodedPassword = passwordEncoder.encode(password);
+
+    try {
+      String userId = getIdFromToken(authorizationHeader, dataVO);
+
+      int result = service.updatePassword(userId, encodedPassword);
+
+      if(result > 0){
+        dataVO.setSuccess(true);
+      } else {
+        dataVO.setSuccess(false);
+      }
+
+    } catch (Exception e) {
+      dataVO.setSuccess(false);
+    }
+    return dataVO;
+  }
+  
 
   @PostMapping("/updatePhone")
   public DataVO updatePhone(@RequestBody Map<String, String> request, @RequestHeader("Authorization") String authorizationHeader) {
     DataVO dataVO = new DataVO();
     String phone = request.get("phone"); // "email" 키로 값을 가져옴
     System.out.println(phone);
-
+    
     try {
       // 토큰 인증 및 아이디 추출
       String userId = getIdFromToken(authorizationHeader, dataVO);
-
+      
       // DB에서 비밀번호 변경
       int result = service.updatePassword(userId, phone);
       if(result > 0){
@@ -350,8 +397,35 @@ public class UsersController {
       dataVO.setSuccess(false);
       dataVO.setMessage("error : " + e );
     }
-      return dataVO;
+    return dataVO;
   }
+  // 아이디 찾기기
+  @PostMapping("/getForgotId")
+  public DataVO getForgotId(@RequestBody String email){
+    DataVO dataVO = new DataVO();
+    System.out.println(email);
+
+    System.out.println("아이디 찾기 실행");
+    try {
+      String id = service.getIdFromEmail(email);
+      if(!id.isEmpty()){
+        dataVO.setData(id);
+        dataVO.setSuccess(true);
+      }
+      System.out.println("id : " + id);
+    } catch (Exception e) {
+      System.out.println(e);
+    }
+    return dataVO;
+  }
+
+  @PostMapping("/getForgotPassword")
+  public DataVO postMethodName(@RequestBody String entity) {
+    DataVO dataVO = new DataVO();
+
+    return dataVO;
+  }
+  
   
 
   public String getIdFromToken(String authorizationHeader, DataVO dataVO){
@@ -367,7 +441,7 @@ public class UsersController {
     String userId = jwtUtil.getUserIdFromToken(token);
     System.out.println("유저 아이디 : "+  userId);
     return userId;
-}
+  }
 
 
   

@@ -18,13 +18,15 @@ public class UserDetailsVO implements UserDetails{
   private String email="";
   private String phone="";
   private String username="";
-
+  
   private String sns_id = "";
   private String sns_provider="";
   private String sns_email_kakao="";
   private String sns_email_naver="";
   private String sns_email_google="";
-
+  
+  private String file_path = "";
+  
   private List<GrantedAuthority> authorities = new ArrayList<>();
 
   @Override

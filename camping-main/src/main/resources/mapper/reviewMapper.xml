@@ -6,27 +6,40 @@
  <!-- namespace는 반드시 mapper 위치로 설정해야 된다. -->
 <mapper namespace="com.ict.camping.domain.review.mapper.ReviewMapper">
 	<select id="getReviewList" parameterType="String" resultType="com.ict.camping.domain.review.vo.ReviewVO">
-		select * 
-		from camping_reviews 
-		where contentId = #{contentId}
-		ORDER BY created_at DESC
+		SELECT 
+        c.*,
+        f.file_idx,
+        f.file_name,
+        f.file_path,
+        f.file_size,
+        f.file_type
+    FROM 
+        camping_reviews c
+    LEFT JOIN 
+        files f ON c.file_idx = f.file_idx
+	WHERE
+		contentId = #{contentId}
+	ORDER BY created_at DESC
 	</select>
 	<delete id="getReviewDelete" parameterType="String">
 		delete from camping_reviews where review_idx = #{review_idx}
 	</delete>
 	<update id="getReviewUpdate" parameterType="ReviewVO">
 		update camping_reviews
-		set user_idx = #{user_idx}, rating = #{rating}, title = #{title}, content = #{content}, created_at = NOW(), filename = #{filename}
+		set user_idx = #{user_idx}, rating = #{rating}, title = #{title}, content = #{content}, created_at = NOW()
 		where review_idx = #{review_idx}
 	</update>
 	<insert id="getReviewWrite" parameterType="ReviewVO">
         INSERT INTO camping_reviews (
-            contentId, user_idx, username, rating, title, content, filename, created_at
+            contentId, user_idx, username, rating, title, content, file_idx, created_at
         ) VALUES (
-            #{contentId}, #{user_idx}, #{username}, #{rating}, #{title}, #{content}, #{filename}, NOW()
+            #{contentId}, #{user_idx}, #{username}, #{rating}, #{title}, #{content}, #{file_idx}, NOW()
         )
     </insert>
 	<select id="countReview" parameterType="String" resultType="Integer">
 		select count(*) from camping_reviews where contentId = #{contentId}
 	</select>
+	<select id="getFileDetail" resultType="com.ict.camping.admin.files.vo.AfileVO">
+		select * from files where file_idx=#{file_idx}
+    </select>
 </mapper>

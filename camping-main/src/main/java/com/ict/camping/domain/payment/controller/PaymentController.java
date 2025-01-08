@@ -9,12 +9,12 @@ import com.ict.camping.domain.payment.vo.PaymentVO;
 
 @RestController
 @RequestMapping("/api/camping")
-
 public class PaymentController {
 
     @Autowired
     private PaymentService paymentService;
 
+    // 기존 결제 처리 메서드
     @PostMapping("/payments")
     public ResponseEntity<String> insertPayment(@RequestBody PaymentVO paymentVO) {
         System.out.println("Received Payment Data: " + paymentVO); // 디버깅용 로그
@@ -33,4 +33,6 @@ public class PaymentController {
             return ResponseEntity.status(500).body("Error: " + e.getMessage());
         }
     }
+
+    
 }

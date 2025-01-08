@@ -34,5 +34,10 @@ public class ACampgroundServiceImpl implements ACampgroundService{
         campgroundMapper.updateRequestAnswer(campRequestIdx, requestAnswer);
     }
 
+    @Override
+    public boolean isNoticeDeleted(String camp_request_idx) {
+        int rowsAffected = campgroundMapper.deleteRequest(camp_request_idx);
+        return rowsAffected > 0;
+    }
 
 }

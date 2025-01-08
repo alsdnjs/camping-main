@@ -11,16 +11,32 @@
         c.contentId,c.facltNm,c.intro,c.lineIntro,c.allar,c.bizrno,c.featureNm,c.induty,c.lctCl,c.doNm,c.sigunguNm,c.zipcode,c.addr1,c.mapX,c.mapY,c.direction,c.tel,c.homepage,c.sitedStnc,
         c.siteMg1Width,c.siteMg2Width,c.siteMg3Width,c.siteMg1Virticl,c.siteMg2Virticl,c.siteMg3Virticl,c.siteBottomCl2,c.siteBottomCl3,c.siteBottomCl4,c.siteBottomCl5,c.sbrsCl,
         c.posblFcltyCl,c.animalCmgCl,c.firstImageUrl,c.createdtime,c.siteBottomCl1,c.gnrlSiteCo,c.autoSiteCo,c.glampSiteCo,c.caravSiteCo,c.brazierCl,c.sbrsEtc,c.glampInnerFclty,c.caravInnerFclty,c.price,
-        -- 찜 개수
-        COALESCE(COUNT(l.like_idx), 0) AS likeCount,
+         -- 찜 개수
+        COALESCE(l.likeCount, 0) AS likeCount,
         -- 리뷰 개수
-        COALESCE(COUNT(r.review_idx), 0) AS reviewCount
+        COALESCE(r.reviewCount, 0) AS reviewCount
     FROM 
         campingsites c
+   LEFT JOIN 
+        (
+            SELECT 
+                contentId, 
+                COUNT(*) AS likeCount
+            FROM 
+                camping_likes
+            GROUP BY 
+                contentId
+        ) l ON c.contentId = l.contentId
     LEFT JOIN 
-        camping_likes l ON c.contentId = l.contentId
-    LEFT JOIN 
-        camping_reviews r ON c.contentId = r.contentId
+        (
+            SELECT 
+                contentId, 
+                COUNT(*) AS reviewCount
+            FROM 
+                camping_reviews
+            GROUP BY 
+                contentId
+        ) r ON c.contentId = r.contentId
     GROUP BY 
         c.contentId, c.facltNm, c.intro, c.lineIntro, c.allar, c.bizrno, c.featureNm,
         c.induty, c.lctCl, c.doNm, c.sigunguNm, c.zipcode, c.addr1, c.mapX, c.mapY,

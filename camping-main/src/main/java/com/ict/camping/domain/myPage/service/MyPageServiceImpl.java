@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.ict.camping.domain.myPage.mapper.MyPageMapper;
 import com.ict.camping.domain.myPage.vo.CampingSiteVO;
+import com.ict.camping.domain.myPage.vo.FileVO;
 import com.ict.camping.domain.myPage.vo.InquiryVO;
 import com.ict.camping.domain.myPage.vo.MyReviewVO;
 import com.ict.camping.domain.myPage.vo.UsageHistoryVO;
@@ -62,5 +63,28 @@ public class MyPageServiceImpl implements MyPageService{
     @Override
     public List<MyReviewVO> getMyReviews(String user_idx) {
         return myPageMapper.getMyReviews(user_idx);
+    }
+
+    @Override
+    public int setFile(FileVO fvo) {
+        return myPageMapper.setFile(fvo);
+    }
+
+    @Override
+    public int insertInquiry(InquiryVO ivo) {
+        return myPageMapper.insertInquiry(ivo);
+    }
+
+    @Override
+    public int updateProfileImage(String user_idx, String file_idx) {
+        Map<String, String> params = new HashMap<>();
+        params.put("user_idx", user_idx);
+        params.put("file_idx", file_idx);
+        return myPageMapper.updateProfileImage(params);
+    }
+
+    @Override
+    public int deleteImageFile(String file_name) {
+        return myPageMapper.deleteImageFile(file_name);
     }
 }

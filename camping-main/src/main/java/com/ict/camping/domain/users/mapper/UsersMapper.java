@@ -21,4 +21,7 @@ public interface UsersMapper  {
   int updatePassword(Map<String, String> map);
   int updateEmail(Map<String, String> map);
 
+  String getIdFromEmail(String email);
+  
+
 }

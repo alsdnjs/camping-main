@@ -80,6 +80,11 @@ spring:
 
 # 정적 파일(이미지, css, js 등)을 URL로 접근할 수 있도록 설정하는 옵션
 # http://localhost:8080/{파일명}
+  web:
+    resources:
+      static-locations:
+      - file:C:/upload
+      - classpath:/static/
  
 # twilio 문자 인증
 twilio:

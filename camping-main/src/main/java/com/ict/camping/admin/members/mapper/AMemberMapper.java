@@ -34,4 +34,8 @@ public interface AMemberMapper {
     int deleteUser(String user_idx);
 
     int getBusinessIdxByUserIdx(String user_idx);
+    // 회원 제재
+    int warnUser(AMemberVO memberVO);
+    // 회원 제재 취소
+    int warnDelete(int user_idx);
 }

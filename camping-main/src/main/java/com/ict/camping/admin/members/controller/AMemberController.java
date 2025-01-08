@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 
 
+
+
 @RestController
 @RequestMapping("/api/member")
 public class AMemberController {
@@ -147,6 +149,35 @@ public class AMemberController {
         System.out.println("데이터 삽입 성공");
         return result;
     }
+
+    @PostMapping("/warn")
+    public int warnUser(@ModelAttribute("data") AMemberVO formData) {
+        int result = memberService.warnUser(formData);
+        if (result == 0) {
+            System.out.println("데이터 삽입 실패");
+            return 0;
+        }
+        System.out.println("데이터 삽입 성공");
+        return result;
+    }
+
+    @PostMapping("/warn/delete/{user_idx}")
+    public ResponseEntity<String> deleteWarn(@PathVariable("user_idx") int userIdx) {
+        try {
+            int result = memberService.warnDelete(userIdx);
+            if (result > 0) {
+                return ResponseEntity.ok("삭제가 성공적으로 완료되었습니다.");
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("삭제할 데이터가 없습니다.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("삭제 요청 중 오류 발생: " + e.getMessage());
+        }
+    }
+    
 
     @PostMapping("/members/update/{user_idx}")
     public ResponseEntity<String> updateMembers(@PathVariable("user_idx") String user_idx,

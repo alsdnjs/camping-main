@@ -8,4 +8,7 @@ import com.ict.camping.domain.payment.vo.PaymentVO;
 public interface PaymentMapper {
    
     int insertPayment(PaymentVO paymentVO); // 데이터 삽입 메서드
+    
+    
 }
+

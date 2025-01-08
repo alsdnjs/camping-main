@@ -56,4 +56,6 @@ public class MapVO {
     private String price;
     private MultipartFile file;
 
+    private int likeCount;
+    private int reviewCount;
 }

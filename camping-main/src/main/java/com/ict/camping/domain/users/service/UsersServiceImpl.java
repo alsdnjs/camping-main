@@ -41,7 +41,7 @@ public class UsersServiceImpl implements UsersService{
   }
 
   @Override
-  public UsersVO getUserById(String id) {
+  public UsersVO getUsersById(String id) {
     return usersMapper.getUsersById(id);
   }
 
@@ -82,5 +82,11 @@ public class UsersServiceImpl implements UsersService{
     map.put("id", id);
     map.put("email", email);
     return usersMapper.updateEmail(map);
+  }
+
+
+  @Override
+  public String getIdFromEmail(String email) {
+    return usersMapper.getIdFromEmail(email);
   }
 }

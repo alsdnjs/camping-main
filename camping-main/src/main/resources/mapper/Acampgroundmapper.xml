@@ -35,6 +35,10 @@ VALUES
         SET request_answer = #{request_answer}
         WHERE camp_request_idx = #{camp_request_idx}
     </update>
+
+    <delete id = "deleteRequest" parameterType="String">
+        delete from camp_request WHERE camp_request_idx = #{camp_request_idx}
+    </delete>
     
 </mapper>
 

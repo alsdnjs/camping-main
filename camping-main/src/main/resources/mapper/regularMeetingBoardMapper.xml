@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ict.camping.domain.regularMeeting.mapper.RegularMeetingBoardMapper">
+
+    <!-- ==================== Result Maps ==================== -->
+
+    <!-- 좋아요 ResultMap -->
+    <resultMap id="RegularMeetingBoardLikeResultMap"
+               type="com.ict.camping.domain.regularMeeting.vo.RegularMeetingBoardLikeVO">
+
+        <!-- 여기서 DB 컬럼 별칭과 VO의 프로퍼티를 매핑 -->
+        <id property="likes_idx"  column="rbl_likes_idx" />
+        <result property="user_idx"  column="rbl_user_idx" />
+        <result property="board_idx" column="rbl_board_idx" />
+    </resultMap>
+
+    <!-- 댓글 ResultMap -->
+    <resultMap id="RegularMeetingBoardCommentResultMap"
+               type="com.ict.camping.domain.regularMeeting.vo.RegularMeetingBoardCommentVO">
+        <id property="comment_idx" column="comment_idx"/>
+        <result property="user_idx" column="user_idx"/>
+        <result property="board_idx" column="board_idx"/>
+        <result property="comment_content" column="comment_content"/>
+        <result property="parent_id" column="parent_id"/>
+        <result property="uploaded_at" column="uploaded_at"/>
+        <association property="user" javaType="com.ict.camping.domain.users.vo.UsersVO">
+            <id property="user_idx" column="user_idx"/>
+            <result property="id" column="id"/>
+            <result property="password" column="password"/>
+            <result property="username" column="username"/>
+            <result property="avatar_url" column="avatar_url"/>
+            <result property="phone" column="phone"/>
+            <result property="email" column="email"/>
+            <result property="address" column="address"/>
+            <result property="address_detail" column="address_detail"/>
+            <result property="zipcode" column="zipcode"/>
+            <result property="warn" column="warn"/>
+            <result property="sns_email_naver" column="sns_email_naver"/>
+            <result property="sns_email_kakao" column="sns_email_kakao"/>
+            <result property="sns_email_google" column="sns_email_google"/>
+            <result property="sns_provider" column="sns_provider"/>
+            <result property="type" column="type"/>
+            <result property="business_number" column="business_number"/>
+        </association>
+    </resultMap>
+
+    <!-- 게시물 ResultMap -->
+    <resultMap id="RegularMeetingBoardResultMap"
+               type="com.ict.camping.domain.regularMeeting.vo.RegularMeetingBoardVO">
+        <id property="board_idx" column="board_idx"/>
+        <result property="meeting_idx" column="meeting_idx"/>
+        <result property="user_idx" column="user_idx"/>
+        <result property="board_content" column="board_content"/>
+        <result property="image_idx" column="image_idx"/>
+        <result property="uploaded_at" column="uploaded_at"/>
+
+        <association property="user" javaType="com.ict.camping.domain.users.vo.UsersVO">
+            <id property="user_idx" column="user_idx"/>
+            <result property="id" column="id"/>
+            <result property="password" column="password"/>
+            <result property="username" column="username"/>
+            <result property="avatar_url" column="avatar_url"/>
+            <result property="phone" column="phone"/>
+            <result property="email" column="email"/>
+            <result property="address" column="address"/>
+            <result property="address_detail" column="address_detail"/>
+            <result property="zipcode" column="zipcode"/>
+            <result property="warn" column="warn"/>
+            <result property="sns_email_naver" column="sns_email_naver"/>
+            <result property="sns_email_kakao" column="sns_email_kakao"/>
+            <result property="sns_email_google" column="sns_email_google"/>
+            <result property="sns_provider" column="sns_provider"/>
+            <result property="type" column="type"/>
+            <result property="business_number" column="business_number"/>
+        </association>
+
+        <!-- 이미지 -->
+        <association property="image" javaType="com.ict.camping.domain.regularMeeting.vo.RegularMeetingBoardImageVO">
+            <id property="image_idx" column="image_idx"/>
+            <result property="image_url" column="image_url"/>
+        </association>
+
+        <!-- 댓글 - collection -->
+        <collection property="comments" resultMap="RegularMeetingBoardCommentResultMap"/>
+
+        <!-- 좋아요 - collection -->
+        <collection property="likes"
+                    resultMap="RegularMeetingBoardLikeResultMap"/>
+    </resultMap>
+
+    <!-- ==================== SQL Statements ==================== -->
+
+    <!-- 게시물 전체 조회 + 좋아요 join -->
+    <select id="selectAllBoards"
+            parameterType="int"
+            resultMap="RegularMeetingBoardResultMap">
+        SELECT 
+            rb.board_idx,
+            rb.meeting_idx,
+            rb.user_idx,
+            rb.board_content,
+            rb.image_idx,
+            rb.uploaded_at,
+            
+            -- 유저 정보
+            u.id AS id,
+            u.password AS password,
+            u.username AS username,
+            u.avatar_url AS avatar_url,
+            u.phone AS phone,
+            u.email AS email,
+            u.address AS address,
+            u.address_detail AS address_detail,
+            u.zipcode AS zipcode,
+            u.warn AS warn,
+            u.sns_email_naver AS sns_email_naver,
+            u.sns_email_kakao AS sns_email_kakao,
+            u.sns_email_google AS sns_email_google,
+            u.sns_provider AS sns_provider,
+            u.type AS type,
+            
+            -- 이미지
+            rmi.image_url,
+            
+            -- 좋아요(join)
+            rbl.likes_idx    AS rbl_likes_idx,
+            rbl.user_idx     AS rbl_user_idx,
+            rbl.board_idx    AS rbl_board_idx
+
+        FROM regular_meeting_board rb
+        LEFT JOIN users u
+            ON rb.user_idx = u.user_idx
+        LEFT JOIN regular_meeting_board_images rmi
+            ON rb.image_idx = rmi.image_idx
+        LEFT JOIN regular_meeting_board_likes rbl
+            ON rb.board_idx = rbl.board_idx
+
+        WHERE rb.meeting_idx = #{meeting_idx}
+        ORDER BY rb.uploaded_at DESC
+    </select>
+
+    <!-- 특정 게시물 조회 + 좋아요 join -->
+    <select id="selectBoardById"
+            parameterType="int"
+            resultMap="RegularMeetingBoardResultMap">
+        SELECT 
+            rb.board_idx,
+            rb.meeting_idx,
+            rb.user_idx,
+            rb.board_content,
+            rb.image_idx,
+            rb.uploaded_at,
+
+            -- 유저 정보
+            u.id AS id,
+            u.password AS password,
+            u.username AS username,
+            u.avatar_url AS avatar_url,
+            u.phone AS phone,
+            u.email AS email,
+            u.address AS address,
+            u.address_detail AS address_detail,
+            u.zipcode AS zipcode,
+            u.warn AS warn,
+            u.sns_email_naver AS sns_email_naver,
+            u.sns_email_kakao AS sns_email_kakao,
+            u.sns_email_google AS sns_email_google,
+            u.sns_provider AS sns_provider,
+            u.type AS type,
+
+            -- 이미지
+            rmi.image_url,
+
+            -- 좋아요(join)
+            rbl.likes_idx    AS rbl_likes_idx,
+            rbl.user_idx     AS rbl_user_idx,
+            rbl.board_idx    AS rbl_board_idx
+
+        FROM regular_meeting_board rb
+        LEFT JOIN users u
+            ON rb.user_idx = u.user_idx
+        LEFT JOIN regular_meeting_board_images rmi
+            ON rb.image_idx = rmi.image_idx
+        LEFT JOIN regular_meeting_board_likes rbl
+            ON rb.board_idx = rbl.board_idx
+
+        WHERE rb.board_idx = #{board_idx}
+    </select>
+
+    <!-- 게시물 삽입 -->
+    <insert id="insertBoard"
+            parameterType="com.ict.camping.domain.regularMeeting.vo.RegularMeetingBoardVO"
+            useGeneratedKeys="true"
+            keyProperty="board_idx">
+        INSERT INTO regular_meeting_board (
+            meeting_idx,
+            user_idx,
+            board_content,
+            image_idx,
+            uploaded_at
+        ) VALUES (
+            #{meeting_idx},
+            #{user_idx},
+            #{board_content},
+            #{image_idx},
+            NOW()
+        )
+    </insert>
+
+    <!-- 게시물 수정 -->
+    <update id="updateBoard"
+            parameterType="com.ict.camping.domain.regularMeeting.vo.RegularMeetingBoardVO">
+        UPDATE regular_meeting_board
+        SET
+            board_content = #{board_content},
+            image_idx = #{image_idx},
+            uploaded_at = NOW()
+        WHERE board_idx = #{board_idx}
+    </update>
+
+    <!-- 게시물 삭제 -->
+    <delete id="deleteBoard"
+            parameterType="int">
+        DELETE FROM regular_meeting_board
+        WHERE board_idx = #{board_idx}
+    </delete>
+
+    <!-- 댓글 전체 조회 -->
+    <select id="selectCommentsByBoardId"
+            parameterType="int"
+            resultMap="RegularMeetingBoardCommentResultMap">
+        SELECT 
+            c.comment_idx,
+            c.user_idx,
+            c.board_idx,
+            c.comment_content,
+            c.parent_id,
+            c.uploaded_at,
+            
+            u.id AS id,
+            u.password AS password,
+            u.username AS username,
+            u.avatar_url AS avatar_url,
+            u.phone AS phone,
+            u.email AS email,
+            u.address AS address,
+            u.address_detail AS address_detail,
+            u.zipcode AS zipcode,
+            u.warn AS warn,
+            u.sns_email_naver AS sns_email_naver,
+            u.sns_email_kakao AS sns_email_kakao,
+            u.sns_email_google AS sns_email_google,
+            u.sns_provider AS sns_provider,
+            u.type AS type
+
+        FROM regular_meeting_board_comments c
+        JOIN users u
+            ON c.user_idx = u.user_idx
+        WHERE c.board_idx = #{board_idx}
+        ORDER BY c.uploaded_at ASC
+    </select>
+
+    <!-- 단일 댓글 조회 -->
+    <select id="selectCommentById"
+            parameterType="int"
+            resultMap="RegularMeetingBoardCommentResultMap">
+        SELECT 
+            c.comment_idx,
+            c.user_idx,
+            c.board_idx,
+            c.comment_content,
+            c.parent_id,
+            c.uploaded_at,
+            
+            u.id AS id,
+            u.password AS password,
+            u.username AS username,
+            u.avatar_url AS avatar_url,
+            u.phone AS phone,
+            u.email AS email,
+            u.address AS address,
+            u.address_detail AS address_detail,
+            u.zipcode AS zipcode,
+            u.warn AS warn,
+            u.sns_email_naver AS sns_email_naver,
+            u.sns_email_kakao AS sns_email_kakao,
+            u.sns_email_google AS sns_email_google,
+            u.sns_provider AS sns_provider,
+            u.type AS type
+
+        FROM regular_meeting_board_comments c
+        JOIN users u
+            ON c.user_idx = u.user_idx
+        WHERE c.comment_idx = #{comment_idx}
+    </select>
+
+    <!-- 댓글 삽입 -->
+    <insert id="insertComment"
+            parameterType="com.ict.camping.domain.regularMeeting.vo.RegularMeetingBoardCommentVO"
+            useGeneratedKeys="true"
+            keyProperty="comment_idx">
+        INSERT INTO regular_meeting_board_comments (
+            user_idx,
+            board_idx,
+            comment_content,
+            parent_id,
+            uploaded_at
+        ) VALUES (
+            #{user_idx},
+            #{board_idx},
+            #{comment_content},
+            #{parent_id},
+            NOW()
+        )
+    </insert>
+
+    <!-- 댓글 수정 -->
+    <update id="updateComment"
+            parameterType="com.ict.camping.domain.regularMeeting.vo.RegularMeetingBoardCommentVO">
+        UPDATE regular_meeting_board_comments
+        SET 
+            comment_content = #{comment_content}
+        WHERE comment_idx = #{comment_idx}
+    </update>
+
+    <!-- 댓글 삭제 -->
+    <delete id="deleteComment"
+            parameterType="int">
+        DELETE FROM regular_meeting_board_comments
+        WHERE comment_idx = #{comment_idx}
+    </delete>
+
+    <!-- 좋아요 조회: 한 건만 가져온다 (board_idx, user_idx UNIQUE라 가정) -->
+    <select id="selectLike" parameterType="map" resultType="com.ict.camping.domain.regularMeeting.vo.RegularMeetingBoardLikeVO">
+        SELECT 
+          likes_idx,
+          user_idx,
+          board_idx
+        FROM regular_meeting_board_likes
+        WHERE board_idx = #{board_idx}
+          AND user_idx = #{user_idx}
+    </select>
+
+    <!-- 좋아요 삽입 -->
+    <insert id="insertLike"
+            parameterType="com.ict.camping.domain.regularMeeting.vo.RegularMeetingBoardLikeVO"
+            useGeneratedKeys="true"
+            keyProperty="likes_idx">
+        INSERT INTO regular_meeting_board_likes (user_idx, board_idx)
+        VALUES (#{user_idx}, #{board_idx})
+    </insert>
+
+    <!-- 좋아요 삭제 -->
+    <delete id="deleteLike" parameterType="int">
+        DELETE FROM regular_meeting_board_likes
+        WHERE likes_idx = #{likes_idx}
+    </delete>
+
+    <!-- 게시물 이미지 삽입 -->
+    <insert id="insertImage"
+            parameterType="com.ict.camping.domain.regularMeeting.vo.RegularMeetingBoardImageVO"
+            useGeneratedKeys="true"
+            keyProperty="image_idx">
+        INSERT INTO regular_meeting_board_images (image_url)
+        VALUES (#{image_url})
+    </insert>
+
+</mapper>

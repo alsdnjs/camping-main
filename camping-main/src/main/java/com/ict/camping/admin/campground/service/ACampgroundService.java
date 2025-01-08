@@ -13,4 +13,6 @@ public interface ACampgroundService {
     int insertCampingSite(ACampgroundVO mapVO);
 
     void updateRequestAnswer(int campRequestIdx, String requestAnswer);
+
+    boolean isNoticeDeleted(String camp_request_idx);
 }

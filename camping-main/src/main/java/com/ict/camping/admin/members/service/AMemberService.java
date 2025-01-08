@@ -34,4 +34,8 @@ public interface AMemberService {
     boolean deleteUser(String user_idx);
     // 회원 idx로 사업자 idx 불러오기
     int getBusinessIdxByUserIdx(String user_idx);
+    // 회원 제재
+    int warnUser(AMemberVO memberVO);
+    // 회원 제재 취소
+    int warnDelete(int user_idx);
 } 

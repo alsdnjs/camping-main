@@ -10,7 +10,7 @@
                 VALUES (#{id}, #{password}, #{username}, #{phone}, #{zipcode}, #{email}, #{address}, #{address_detail}, #{warn}, NOW(), #{type})
 	</insert>
     
-	<insert id="joinBusinessuser" parameterType="UsersVO">
+	<insert id="joinBusinessUser" parameterType="UsersVO">
         INSERT INTO business_users(user_idx, business_name, business_number, started_date, contentId)
                 VALUES (#{user_idx}, #{business_name}, #{business_number}, STR_TO_DATE(#{started_date}, '%Y%m%d'), #{contentId})
 	</insert>
@@ -22,7 +22,9 @@
         SELECT id FROM users WHERE id = #{id}
     </select>
     <select id="getUsersById" parameterType="String" resultType="UsersVO">
-        SELECT * FROM users WHERE id = #{id}
+        SELECT * FROM users u
+        LEFT JOIN files f ON u.file_idx = f.file_idx
+        WHERE id = #{id};
     </select>
     <insert id="insertUser" parameterType="UsersVO">
         INSERT INTO users(
@@ -74,7 +76,8 @@
         )
     </select>
     <select id="getUserById" parameterType="String" resultType="UserDetailsVO">
-        SELECT * FROM users WHERE id = #{id}
+        SELECT * FROM users
+        WHERE id = #{id}
     </select>
     <select id="getPasswordById" parameterType="String" resultType="String">
         SELECT password FROM users WHERE id = #{id}
@@ -89,4 +92,8 @@
         SET email = #{email}
         WHERE id = #{id}
     </update>
+    <select id="getIdFromEmail" parameterType="String" resultType="String">
+        SELECT id FROM users
+        WHERE email = #{email}
+    </select>
 </mapper>

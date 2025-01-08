@@ -115,6 +115,23 @@
         VALUES (#{user_idx}, #{business_name}, #{business_number}, #{contentId}, #{started_date})
     </insert>
 
+    <update id="warnUser" parameterType="com.ict.camping.admin.members.vo.AMemberVO">
+        UPDATE users
+        SET warn = #{warn},
+            warn_cause = #{warn_cause},
+            warn_start_at = NOW()
+        WHERE user_idx = #{user_idx}
+    </update>
+
+    <update id="warnDelete" parameterType="int">
+        UPDATE users
+        SET warn = DEFAULT,
+            warn_cause = DEFAULT,
+            warn_start_at = DEFAULT
+        WHERE user_idx = #{user_idx}
+    </update>
+
+
     <!-- 사업자 중복 확인 -->
     <select id="checkUserDuplicate" parameterType="String" resultType="int">
         SELECT COUNT(*) FROM business_users WHERE user_idx = #{user_idx}

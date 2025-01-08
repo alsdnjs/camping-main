@@ -3,6 +3,7 @@ package com.ict.camping.domain.myPage.service;
 import java.util.List;
 
 import com.ict.camping.domain.myPage.vo.CampingSiteVO;
+import com.ict.camping.domain.myPage.vo.FileVO;
 import com.ict.camping.domain.myPage.vo.InquiryVO;
 import com.ict.camping.domain.myPage.vo.MyReviewVO;
 import com.ict.camping.domain.myPage.vo.UsageHistoryVO;
@@ -21,4 +22,12 @@ public interface MyPageService {
     public List<InquiryVO> getMyInquiryHistory(String user_idx);
 
     public List<MyReviewVO> getMyReviews(String user_idx);
+
+    public int setFile(FileVO fvo);
+
+    public int insertInquiry(InquiryVO ivo);
+
+    public int updateProfileImage(String user_idx, String file_idx);
+
+    public int deleteImageFile(String file_name);
 }

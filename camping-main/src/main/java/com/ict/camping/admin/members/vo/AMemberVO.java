@@ -20,6 +20,8 @@ public class AMemberVO {
     private String sns_email_naver;
     private String address;
     private String join_date;
-    private String warn;
+    private int warn;
     private String type;
+    private String warn_cause;
+    private String warn_start_at;
 }

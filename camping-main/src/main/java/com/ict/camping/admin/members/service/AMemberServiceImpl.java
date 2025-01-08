@@ -88,5 +88,15 @@ public class AMemberServiceImpl implements AMemberService{
         return memberMapper.getBusinessIdxByUserIdx(user_idx);
     }
 
+    @Override
+    public int warnUser(AMemberVO memberVO) {
+        return memberMapper.warnUser(memberVO);
+    }
+
+    @Override
+    public int warnDelete(int user_idx) {
+        return memberMapper.warnDelete(user_idx);
+    }
+
     
 }

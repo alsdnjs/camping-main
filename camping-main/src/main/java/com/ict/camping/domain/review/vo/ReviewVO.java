@@ -12,6 +12,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReviewVO {
-    private String review_idx, contentId, username, rating, created_at, user_idx, title ,content, filename;
-    private MultipartFile file;
+    private String review_idx, contentId, username, rating, created_at, user_idx, title ,content, file_idx;
+    
+    // join
+    private String file_name;
+    private String file_path;
+    private int file_size;
+    private String file_type;
+    private String type;
 }

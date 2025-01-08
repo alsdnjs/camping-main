@@ -1,18 +1,25 @@
 package com.ict.camping.domain.myPage.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.ict.camping.common.util.FileUtils;
 import com.ict.camping.common.util.JwtUtil;
 import com.ict.camping.domain.auth.vo.DataVO;
 import com.ict.camping.domain.myPage.service.MyPageService;
 import com.ict.camping.domain.myPage.vo.CampingSiteVO;
+import com.ict.camping.domain.myPage.vo.FileVO;
 import com.ict.camping.domain.myPage.vo.InquiryVO;
 import com.ict.camping.domain.myPage.vo.MyReviewVO;
 import com.ict.camping.domain.myPage.vo.UsageHistoryVO;
@@ -33,6 +40,9 @@ public class MyPageController {
     private MyPageService myPageService;
     @Autowired
     private UsersService usersService;
+    private final String UPLOAD_DIR = "D:/CampingProject/camping/src/main/resources/static/upload/";
+    // FileUtils 클래스를 인스턴스화하여 사용
+    private final FileUtils fileUtils = new FileUtils();
 
       // 내가 찜한 캠핑사이트 가져오기
     @GetMapping("/getMyFavoriteCampingSites")
@@ -62,7 +72,7 @@ public class MyPageController {
 
     @GetMapping("/deleteMyCampingSite")
     public DataVO deleteMyCampingSites(
-        @RequestParam("contentId") String contentId, 
+        @RequestParam("contentId") String contentId,
         @RequestHeader("Authorization") String authorizationHeader) {
 
         DataVO dataVO = new DataVO();
@@ -159,6 +169,132 @@ public class MyPageController {
         
     // }
     
+    @PostMapping("/sendInquiry")
+    public DataVO submitInquiry(
+        @RequestHeader("Authorization") String authorizationHeader,
+        @RequestParam("subject") String subject,
+        @RequestParam("content") String content,
+        @RequestParam(value = "file", required = false) MultipartFile file) {
+            
+        DataVO dataVO = new DataVO();
+        FileVO fvo = new FileVO();
+        InquiryVO ivo = new InquiryVO();
+
+        // 제목과 내용 처리
+        ivo.setContent(content);
+        ivo.setSubject(subject);
+        System.out.println("제목: " + subject);
+        System.out.println("내용: " + content);
+        try {
+            // 사용자 ID 추출
+            String userId = getIdFromToken(authorizationHeader, dataVO);
+            // 사용자 IDX 가져오기
+            String user_idx = usersService.getUserIdxById(userId);
+            // VO에 user_idx 저장
+            ivo.setUser_idx(user_idx);
+        } catch (Exception e) {
+            System.out.println("사용자 인증 실패 : " + e);
+        }
+        
+        // 파일 처리 (파일이 있을 경우)
+        if (file != null && !file.isEmpty()) {  // 파일이 null이 아니고 비어있지 않을 때만 처리
+            try {
+                String uploadDir = new File("src/main/resources/static/upload").getAbsolutePath();
+
+                String fileName = fileUtils.saveFile(file, uploadDir);
+                
+                fvo.setFile_name(fileName);
+
+                // files 테이블에 저장(DB)
+                int result = myPageService.setFile(fvo);
+                if(result > 0){
+                    String file_idx = fvo.getFile_idx();
+                    // InquiryVO에 file_idx 저장
+                    ivo.setFile_idx(file_idx);
+                    // Inquiry 테이블에 VO 저장
+                    int result1 = myPageService.insertInquiry(ivo);
+                    if(result1 > 0){
+                        dataVO.setSuccess(true);
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("파일 저장 중 오류 발생: " + e.getMessage());
+                dataVO.setSuccess(false);
+            }
+        } else {
+            System.out.println("파일이 업로드되지 않았습니다.");
+            int result = myPageService.insertInquiry(ivo);
+            if(result > 0){
+                dataVO.setSuccess(true);
+            } else {
+                dataVO.setSuccess(false);
+            }
+        }
+        return dataVO;
+    }
+
+
+    // 프로필 사진 업데이트
+    @PostMapping("/updateProfileImage")
+    public DataVO updateProfileImage(
+        @RequestHeader("Authorization") String authorizationHeader,
+        @RequestParam("image") MultipartFile file,
+        @RequestParam("prevImage") String prevImage) {
+
+        DataVO dataVO = new DataVO();
+        FileVO fvo = new FileVO();
+
+        // 기존 이미지 파일 삭제제
+        String uploadDir = new File("src/main/resources/static/upload").getAbsolutePath();
+        File fileToDelete = new File(UPLOAD_DIR + prevImage);
+        try {
+                        // 파일 존재 여부 확인 후 삭제
+            if (fileToDelete.exists()) {
+                if (fileToDelete.delete()) {
+                    System.out.println("파일 삭제 성공");
+                } else {
+                    System.out.println("파일 삭제 실패.");
+                }
+            } else {
+                System.out.println("파일이 존재하지 않습니다.");
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+        try {
+            // 사용자 ID 추출
+            String userId = getIdFromToken(authorizationHeader, dataVO);
+            // 사용자 IDX 가져오기
+            String user_idx = usersService.getUserIdxById(userId);
+            String fileName = fileUtils.saveFile(file, uploadDir);
+
+            // 파일 정보를 객체에 저장
+            System.out.println(fileName);
+            fvo.setFile_name(fileName);
+
+            // files 테이블에 저장(DB)
+            int result = myPageService.setFile(fvo);
+            if(result > 0){
+                String file_idx = fvo.getFile_idx();
+                // users 테이블에 file_idx 수정
+                int result1 = myPageService.updateProfileImage(user_idx, file_idx);
+                // DB files 에서 삭제
+                myPageService.deleteImageFile(prevImage);
+                if(result1 > 0){
+                    dataVO.setSuccess(true);
+                }
+                
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("파일 저장 중 오류 발생: " + e.getMessage());
+            dataVO.setSuccess(false);
+        }
+        return dataVO;
+    }
+    
     
 
     public String getIdFromToken(String authorizationHeader, DataVO dataVO){
@@ -175,4 +311,5 @@ public class MyPageController {
         System.out.println("유저 아이디 : "+  userId);
         return userId;
     }
+
 }

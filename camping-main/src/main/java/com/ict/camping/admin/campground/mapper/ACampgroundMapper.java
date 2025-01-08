@@ -20,4 +20,7 @@ public interface ACampgroundMapper {
 
     void updateRequestAnswer(@Param("camp_request_idx") int campRequestIdx, 
                              @Param("request_answer") String requestAnswer);
+
+    // 요청사항 삭제
+    int deleteRequest(String camp_request_idx);
 }

@@ -43,13 +43,17 @@ public class JwtRequestFilter extends OncePerRequestFilter{
 
       // 요청 URI 확인
       String uri = request.getRequestURI();
+      System.out.println("유알아이:" + uri);
 
       // 로그인 및 회원가입 요청은 필터 검증 제외
       // 로그인 및 회원가입 시에는 처음에 토큰이 없고 새로 생성되거나 필요없음
-      if (uri.equals("/api/users/login") || uri.equals("/api/users/join")) {
+      if (uri.equals("/login") || uri.equals("/api/users/login") ||
+        uri.equals("/api/users/join") || uri.equals("/api/signup/verifyEmail")) {
+          System.out.println("skipped");
           filterChain.doFilter(request, response);
           return;
       }
+      
 
       final String requestTokenHeader = request.getHeader("Authorization");
       String username = null;
@@ -67,7 +71,7 @@ public class JwtRequestFilter extends OncePerRequestFilter{
           username = jwtUtil.extractUsername(jwtToken);
 
         } catch (Exception e) {
-          System.out.println("JWT token 오류");
+          System.out.println("JWT token 오류" + e);
           logger.warn("jwtToken error");
         }
       } else {
@@ -92,7 +96,7 @@ public class JwtRequestFilter extends OncePerRequestFilter{
 
         // Spring Security 인증 객체 추가 세부 정보를 성정
         usernamePasswordAuthenticationToken
-            .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+          .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
         // Spring Security 컨텍스트에 저장
         SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);

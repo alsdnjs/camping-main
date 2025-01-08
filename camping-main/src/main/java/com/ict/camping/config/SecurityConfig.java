@@ -55,6 +55,7 @@ public class SecurityConfig {
               .csrf(csrf -> csrf.disable())
               // 요청별 권한 설정
               .authorizeHttpRequests(authorize -> authorize
+                    .requestMatchers("/uploads/**").permitAll()
                       .requestMatchers("/upload/**").permitAll()
                       .requestMatchers("/oauth2/**").permitAll()
                       // 특정 URL에 인증없이 허용
