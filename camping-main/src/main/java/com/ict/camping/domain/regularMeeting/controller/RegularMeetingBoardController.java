@@ -31,8 +31,7 @@ public class RegularMeetingBoardController {
     @Autowired
     private RegularMeetingBoardService boardService;
 
- // 절대 경로 설정
- private static final String FILE_DIRECTORY = "C:/upload/";
+
 
     @Autowired
     private RegularMeetingBoardLikeService likeService; // LikeService 주입
@@ -191,35 +190,5 @@ public class RegularMeetingBoardController {
     // 기타 필요한 엔드포인트들...
 
 
-     @GetMapping("/getfile/{filename}")
-    public ResponseEntity<Resource> getFile(@PathVariable("filename") String filename) {
-    try {
-        // 요청된 파일 경로 생성
-        Path filePath = Paths.get(FILE_DIRECTORY + filename);
-        Resource resource = new UrlResource(filePath.toUri());
-
-        // 파일 존재 여부 확인
-        if (!resource.exists()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(null);
-        }
-
-        // 파일의 Content-Type을 동적으로 결정 (이미지, 텍스트 등)
-        String contentType = "application/octet-stream"; // 기본값 (바이너리 데이터)
-        try {
-            contentType = Files.probeContentType(filePath); // 파일의 실제 MIME 타입 가져오기
-        } catch (IOException e) {
-            // MIME 타입을 가져오지 못한 경우 기본값 유지
-        }
-
-        // 파일 반환
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                .contentType(MediaType.parseMediaType(contentType))
-                .body(resource);
-    } catch (MalformedURLException e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(null);
-    }
-}
+    
 }

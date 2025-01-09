@@ -89,7 +89,7 @@ spring:
 # twilio 문자 인증
 twilio:
   account-sid: ACd5f9a1f5ac6f9db9d9afe2a7cb046c1b
-  auth-token: dfad46fc4621945acceb30a8cb07381b
+  auth-token: fd384f3545dd9399f28947cb063d8d09
   phone-number: +12184344815
 
 server:
@@ -115,6 +115,9 @@ logging:
 
 file:
   upload-dir: C:/Users/5/Desktop/camping-main/camping-main/src/main/resources/images/
+  upload-dir2: C:/upload
+
+
 
 servlet:
   multipart:

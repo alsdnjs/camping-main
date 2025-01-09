@@ -22,7 +22,7 @@ public class RegularMeetingBoardImageServiceImpl implements RegularMeetingBoardI
     @Autowired
     private RegularMeetingBoardImageMapper imageMapper;
 
-    private final String uploadDir = "C:/upload/"; // 실제 경로로 수정 필요
+    private final String uploadDir = "src/main/resources/static/upload/"; // 실제 경로로 수정 필요
 
     @Override
     public List<String> uploadImages(List<MultipartFile> files) throws Exception {

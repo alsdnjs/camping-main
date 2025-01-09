@@ -60,7 +60,7 @@ public class RegularMeetingController {
                 }
                 storedFileName = System.currentTimeMillis() + ext; // 예: 1694492012345.gif
 
-                Path uploadDir = Paths.get("uploads/");
+                Path uploadDir = Paths.get("src/main/resources/static/upload/");
                 if (!Files.exists(uploadDir)) {
                     Files.createDirectories(uploadDir);
                 }
@@ -160,7 +160,7 @@ public class RegularMeetingController {
                 }
                 storedFileName = System.currentTimeMillis() + ext; // 예: 1694492012345.gif
 
-                Path uploadDir = Paths.get("uploads/");
+                Path uploadDir = Paths.get("src/main/resources/static/upload/");
                 if (!Files.exists(uploadDir)) {
                     Files.createDirectories(uploadDir);
                 }
