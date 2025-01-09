@@ -32,6 +32,9 @@
             <if test="password != null">
             password,
             </if>
+            <if test="phone != null">
+            phone,
+            </if>
             username,
             <if test="sns_email_naver != null">
             sns_email_naver,
@@ -49,6 +52,9 @@
             #{id}, 
             <if test="password != null">
             #{password},
+            </if>
+            <if test="phone != null">
+            #{phone},
             </if>
             #{username},
             <if test="sns_email_naver != null">
@@ -92,8 +98,21 @@
         SET email = #{email}
         WHERE id = #{id}
     </update>
+    <update id="updatePhone" parameterType="map">
+        UPDATE users
+        SET phone = #{phone}
+        WHERE id = #{id}
+    </update>
     <select id="getIdFromEmail" parameterType="String" resultType="String">
         SELECT id FROM users
         WHERE email = #{email}
     </select>
+    <select id="getEmailCount" parameterType="String" resultType="Integer">
+        SELECT count(*) FROM users
+        WHERE email=#{email}
+    </select>
+    <delete id="deleteAccount" parameterType="String">
+        DELETE FROM users
+        WHERE id = #{id}
+    </delete>
 </mapper>

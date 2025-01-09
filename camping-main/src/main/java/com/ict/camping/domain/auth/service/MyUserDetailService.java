@@ -44,8 +44,9 @@ public class MyUserDetailService implements UserDetailsService{
   public UserDetails loadUserByOAuth2User(OAuth2User oAuth2User, String provider){
     String email = oAuth2User.getAttribute("email");
     String name = oAuth2User.getAttribute("name");
-
+    String phone = oAuth2User.getAttribute("phone");
     String id = oAuth2User.getAttribute("id");
+    String user_idx = oAuth2User.getAttribute("user_idx");
     System.out.println("provider : " + provider);
 
     UsersVO uvo = new UsersVO();
@@ -54,26 +55,31 @@ public class MyUserDetailService implements UserDetailsService{
         uvo.setSns_email_kakao(email);
         uvo.setUsername(name);
         uvo.setId(id);
+        uvo.setUser_idx(user_idx);
         uvo.setSns_provider("kakao");
-    } else if (provider.equals("naver")) {
+      } else if (provider.equals("naver")) {
         // 네이버 ID는 String 타입으로 반환됨
         uvo.setSns_email_naver(email);
         uvo.setUsername(name);
         uvo.setId(id);
+        uvo.setUser_idx(user_idx);
+        uvo.setPhone(phone.replace("-", ""));
         uvo.setSns_provider("naver");
-    } else if (provider.equals("google")) {
-      // google ID 는 sub로 받지만 CustomerOAuth2UserService에서 {id : getAttribute("sub")}로 이미 받음
+      } else if (provider.equals("google")) {
+        // google ID 는 sub로 받지만 CustomerOAuth2UserService에서 {id : getAttribute("sub")}로 이미 받음
         uvo.setSns_email_google(email);
         uvo.setUsername(name);
         uvo.setId(id);
+        uvo.setUser_idx(user_idx);
         uvo.setSns_provider("google");
     }
 
-    // 아이디가 존재하면 DB에 있는 것, 아니면 DB에 없는 것
+    // 이미 존재하는 아이디인지 판단
     UsersVO uvo2 = usersMapper.findUserByProvider(uvo);
 
-    System.out.println("uvo : " + uvo);
-    System.out.println("uvo2 : " + uvo2);
+    System.out.println("uvo 제공받은 개인정보들 : " + uvo);
+    System.out.println("uvo2 제공받은 개인정보 + 내가 입력한 정보들 : " + uvo2);
+    // 처음 로그인 시 DB에 내용 저장장
     if(uvo2 == null){
       usersMapper.insertUser(uvo);
     }
@@ -89,6 +95,9 @@ public class MyUserDetailService implements UserDetailsService{
         uvo.setUsername(user.getUsername());
         uvo.setEmail(user.getEmail());
         // 더 필요한 필드들을 설정
+        String user_idx = usersMapper.getUserIdxById(userId);
+
+        uvo.setUser_idx(user_idx);
         return uvo;
     }
     return null;

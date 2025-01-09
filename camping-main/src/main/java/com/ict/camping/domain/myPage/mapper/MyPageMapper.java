@@ -9,6 +9,7 @@ import com.ict.camping.domain.myPage.vo.CampingSiteVO;
 import com.ict.camping.domain.myPage.vo.FileVO;
 import com.ict.camping.domain.myPage.vo.InquiryVO;
 import com.ict.camping.domain.myPage.vo.MyReviewVO;
+import com.ict.camping.domain.myPage.vo.MyRegularMeetingVO;
 import com.ict.camping.domain.myPage.vo.UsageHistoryVO;
 
 
@@ -34,4 +35,10 @@ public interface MyPageMapper {
     int updateProfileImage(Map<String, String> map);
 
     int deleteImageFile(String file_name);
+
+    List<MyRegularMeetingVO> getMyMeetingsList(String user_idx);
+
+    List<MyRegularMeetingVO> getMyLikesMeetings(String user_idx);
+
+    int toggleLikesDelete(Map<String, String> map);
 }

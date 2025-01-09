@@ -11,7 +11,9 @@ import com.ict.camping.domain.myPage.mapper.MyPageMapper;
 import com.ict.camping.domain.myPage.vo.CampingSiteVO;
 import com.ict.camping.domain.myPage.vo.FileVO;
 import com.ict.camping.domain.myPage.vo.InquiryVO;
+import com.ict.camping.domain.myPage.vo.MyRegularMeetingVO;
 import com.ict.camping.domain.myPage.vo.MyReviewVO;
+import com.ict.camping.domain.myPage.vo.MyRegularMeetingVO;
 import com.ict.camping.domain.myPage.vo.UsageHistoryVO;
 import com.ict.camping.domain.users.mapper.UsersMapper;
 
@@ -76,15 +78,33 @@ public class MyPageServiceImpl implements MyPageService{
     }
 
     @Override
-    public int updateProfileImage(String user_idx, String file_idx) {
+    public int updateProfileImage(String user_idx, String avatar_url) {
         Map<String, String> params = new HashMap<>();
         params.put("user_idx", user_idx);
-        params.put("file_idx", file_idx);
+        params.put("avatar_url", avatar_url);
         return myPageMapper.updateProfileImage(params);
     }
 
     @Override
     public int deleteImageFile(String file_name) {
         return myPageMapper.deleteImageFile(file_name);
+    }
+
+    @Override
+    public List<MyRegularMeetingVO> getMyMeetingsList(String user_idx) {
+        return myPageMapper.getMyMeetingsList(user_idx);
+    }
+
+    @Override
+    public List<MyRegularMeetingVO> getMyLikesMeetings(String user_idx) {
+        return myPageMapper.getMyLikesMeetings(user_idx);
+    }
+
+    @Override
+    public int toggleLikesDelete(String user_idx, String meeting_idx) {
+        Map<String, String> params = new HashMap<>();
+        params.put("user_idx", user_idx);
+        params.put("meeting_idx", meeting_idx);
+        return myPageMapper.toggleLikesDelete(params);
     }
 }

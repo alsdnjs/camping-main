@@ -31,7 +31,8 @@ public class UsersServiceImpl implements UsersService{
     // 아니면 사업자 테이블에 사업자 가입
     String idx = usersMapper.getUserIdxById(uvo.getId());
     uvo.setUser_idx(idx);
-    return usersMapper.joinBusinessUser(uvo);
+    result = usersMapper.joinBusinessUser(uvo);
+    return result;
   }
 
 
@@ -83,10 +84,32 @@ public class UsersServiceImpl implements UsersService{
     map.put("email", email);
     return usersMapper.updateEmail(map);
   }
+  
+  @Override
+  public int updatePhone(String id, String phone) {
+    Map<String, String> map = new HashMap<>();
+    map.put("id", id);
+    map.put("phone", phone);
+    return usersMapper.updatePhone(map);
+  }
 
 
   @Override
   public String getIdFromEmail(String email) {
     return usersMapper.getIdFromEmail(email);
   }
+
+
+  @Override
+  public int getEmailCount(String email) {
+    return usersMapper.getEmailCount(email);
+  }
+
+
+  @Override
+  public int deleteAccount(String id) {
+    return usersMapper.deleteAccount(id);
+  }
+
+
 }

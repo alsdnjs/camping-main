@@ -13,6 +13,7 @@ import lombok.Data;
 @Data
 public class UserDetailsVO implements UserDetails{
 
+  private String user_idx = "";
   private String id="";
   private String password="";
   private String email="";

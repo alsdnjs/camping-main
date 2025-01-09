@@ -6,6 +6,7 @@ import com.ict.camping.domain.myPage.vo.CampingSiteVO;
 import com.ict.camping.domain.myPage.vo.FileVO;
 import com.ict.camping.domain.myPage.vo.InquiryVO;
 import com.ict.camping.domain.myPage.vo.MyReviewVO;
+import com.ict.camping.domain.myPage.vo.MyRegularMeetingVO;
 import com.ict.camping.domain.myPage.vo.UsageHistoryVO;
 
 
@@ -27,7 +28,13 @@ public interface MyPageService {
 
     public int insertInquiry(InquiryVO ivo);
 
-    public int updateProfileImage(String user_idx, String file_idx);
+    public int updateProfileImage(String user_idx, String avatar_url);
 
     public int deleteImageFile(String file_name);
+
+    public List<MyRegularMeetingVO> getMyMeetingsList(String user_idx);
+    
+    public List<MyRegularMeetingVO> getMyLikesMeetings(String user_idx);
+
+    public int toggleLikesDelete(String user_idx, String meeting_idx);
 }

@@ -58,6 +58,7 @@ public class SecurityConfig {
                     .requestMatchers("/uploads/**").permitAll()
                       .requestMatchers("/upload/**").permitAll()
                       .requestMatchers("/oauth2/**").permitAll()
+                      .requestMatchers("/images/**").permitAll()
                       // 특정 URL에 인증없이 허용
                       .requestMatchers("/api/users/join", "/api/users/login", "/api/users/idCheck","/api/camping/**","/api/camping/sites/{contentId}",
                               "/api/signup/sendVerificationEmail", "/api/signup/verifyEmail", "/api/sms/**", "api/users/profile" ,"/api/admin/**", "/api/member/**" ,"/api/meeting/**"

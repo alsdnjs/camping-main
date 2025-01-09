@@ -7,6 +7,7 @@ import com.ict.camping.common.util.JwtUtil;
 import com.ict.camping.domain.auth.service.MyUserDetailService;
 import com.ict.camping.domain.auth.vo.DataVO;
 import com.ict.camping.domain.auth.vo.UserDetailsVO;
+import com.ict.camping.domain.myPage.vo.MyRegularMeetingVO;
 import com.ict.camping.domain.users.service.UsersService;
 import com.ict.camping.domain.users.vo.UsersVO;
 
@@ -300,7 +301,17 @@ public class UsersController {
       // 토큰 인증 및 아이디 추출
       String userId = getIdFromToken(authorizationHeader, dataVO);
 
-      // DB에서 비밀번호 변경   
+      // 이메일 유무 확인
+      int emailCount = service.getEmailCount(email);
+      System.out.println(emailCount);
+
+      if(emailCount >= 1){
+        dataVO.setMessage("이미 사용 중인 이메일 입니다.");
+        dataVO.setSuccess(false);
+        return dataVO;
+      }
+
+      // DB에서 비밀번호 변경
       int result = service.updateEmail(userId, email);
       System.out.println(result);
       if(result > 0){
@@ -319,7 +330,7 @@ public class UsersController {
 
   // 비밀번호 변경
   @PostMapping("/updatePassword")
-  public DataVO updatePassword(
+  public DataVO updatePassword(   
     @RequestBody String password,
     @RequestHeader("Authorization") String authorizationHeader){
     DataVO dataVO = new DataVO();
@@ -385,7 +396,7 @@ public class UsersController {
       String userId = getIdFromToken(authorizationHeader, dataVO);
       
       // DB에서 비밀번호 변경
-      int result = service.updatePassword(userId, phone);
+      int result = service.updatePhone(userId, phone);
       if(result > 0){
         dataVO.setSuccess(true);
         dataVO.setMessage("핸드폰 번호 변경에 성공했습니다.");
@@ -419,13 +430,35 @@ public class UsersController {
     return dataVO;
   }
 
-  @PostMapping("/getForgotPassword")
-  public DataVO postMethodName(@RequestBody String entity) {
+  // 계정 삭제제
+  @GetMapping("/deleteAccount")
+  public DataVO deleteAccount(@RequestHeader("Authorization") String authorizationHeader) {
     DataVO dataVO = new DataVO();
+    System.out.println("아이디 찾기 실행");
+    try {
+      // 토큰 인증 및 아이디 추출
+      String userId = getIdFromToken(authorizationHeader, dataVO);
 
+      int result = service.deleteAccount(userId);
+      if(result > 0){
+        dataVO.setSuccess(true);
+      }
+      System.out.println("id : " + userId);
+    } catch (Exception e) {
+      System.out.println(e);
+    }
     return dataVO;
   }
   
+
+  // @PostMapping("/getForgotPassword")
+  // public DataVO postMethodName(@RequestBody String entity) {
+  //   DataVO dataVO = new DataVO();
+
+  //   return dataVO;
+  // }
+
+  // 내가 가입한 정규모임 불러오기
   
 
   public String getIdFromToken(String authorizationHeader, DataVO dataVO){

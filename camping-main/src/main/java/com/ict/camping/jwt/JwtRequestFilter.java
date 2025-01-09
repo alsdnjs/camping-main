@@ -48,7 +48,8 @@ public class JwtRequestFilter extends OncePerRequestFilter{
       // 로그인 및 회원가입 요청은 필터 검증 제외
       // 로그인 및 회원가입 시에는 처음에 토큰이 없고 새로 생성되거나 필요없음
       if (uri.equals("/login") || uri.equals("/api/users/login") ||
-        uri.equals("/api/users/join") || uri.equals("/api/signup/verifyEmail")) {
+        uri.equals("/api/users/join") || uri.equals("/api/signup/verifyEmail") ||
+        uri.equals("/favicon.ico")) {
           System.out.println("skipped");
           filterChain.doFilter(request, response);
           return;

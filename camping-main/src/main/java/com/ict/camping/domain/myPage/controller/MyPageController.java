@@ -21,7 +21,9 @@ import com.ict.camping.domain.myPage.service.MyPageService;
 import com.ict.camping.domain.myPage.vo.CampingSiteVO;
 import com.ict.camping.domain.myPage.vo.FileVO;
 import com.ict.camping.domain.myPage.vo.InquiryVO;
+import com.ict.camping.domain.myPage.vo.MyRegularMeetingVO;
 import com.ict.camping.domain.myPage.vo.MyReviewVO;
+import com.ict.camping.domain.myPage.vo.MyRegularMeetingVO;
 import com.ict.camping.domain.myPage.vo.UsageHistoryVO;
 import com.ict.camping.domain.users.service.UsersService;
 
@@ -40,7 +42,7 @@ public class MyPageController {
     private MyPageService myPageService;
     @Autowired
     private UsersService usersService;
-    private final String UPLOAD_DIR = "D:/CampingProject/camping/src/main/resources/static/upload/";
+    private final String UPLOAD_DIR = "C:/Users/5/Desktop/camping-main/camping-main/src/main/resources/static/upload/";
     // FileUtils 클래스를 인스턴스화하여 사용
     private final FileUtils fileUtils = new FileUtils();
 
@@ -163,6 +165,7 @@ public class MyPageController {
     }
     
     
+    
 
     // @GetMapping("/getCampingLikesCount")
     // public String getCampingLikesCount(@RequestParam String param) {
@@ -243,20 +246,22 @@ public class MyPageController {
         @RequestParam("prevImage") String prevImage) {
 
         DataVO dataVO = new DataVO();
-        FileVO fvo = new FileVO();
 
         // 기존 이미지 파일 삭제제
         String uploadDir = new File("src/main/resources/static/upload").getAbsolutePath();
         File fileToDelete = new File(UPLOAD_DIR + prevImage);
+        System.out.println("삭제할 파일 : " + fileToDelete);
         try {
                         // 파일 존재 여부 확인 후 삭제
             if (fileToDelete.exists()) {
+                System.out.println("파일 있음");
                 if (fileToDelete.delete()) {
                     System.out.println("파일 삭제 성공");
                 } else {
                     System.out.println("파일 삭제 실패.");
                 }
             } else {
+                System.out.println(fileToDelete);
                 System.out.println("파일이 존재하지 않습니다.");
             }
         } catch (Exception e) {
@@ -268,25 +273,32 @@ public class MyPageController {
             String userId = getIdFromToken(authorizationHeader, dataVO);
             // 사용자 IDX 가져오기
             String user_idx = usersService.getUserIdxById(userId);
-            String fileName = fileUtils.saveFile(file, uploadDir);
+            String avatar_url = fileUtils.saveFile(file, uploadDir);
 
             // 파일 정보를 객체에 저장
-            System.out.println(fileName);
-            fvo.setFile_name(fileName);
+            System.out.println(avatar_url);
+            int result = myPageService.updateProfileImage(user_idx, avatar_url);
 
-            // files 테이블에 저장(DB)
-            int result = myPageService.setFile(fvo);
-            if(result > 0){
-                String file_idx = fvo.getFile_idx();
-                // users 테이블에 file_idx 수정
-                int result1 = myPageService.updateProfileImage(user_idx, file_idx);
-                // DB files 에서 삭제
-                myPageService.deleteImageFile(prevImage);
-                if(result1 > 0){
-                    dataVO.setSuccess(true);
-                }
-                
+            if(result > 0) {
+                dataVO.setSuccess(true);
             }
+
+
+            // fvo.setFile_name(fileName);
+
+            // // files 테이블에 저장(DB)
+            // int result = myPageService.setFile(fvo);
+            // if(result > 0){
+            //     String file_idx = fvo.getFile_idx();
+            //     // users 테이블에 file_idx 수정
+            //     int result1 = myPageService.updateProfileImage(user_idx, file_idx);
+            //     // DB files 에서 삭제
+            //     myPageService.deleteImageFile(prevImage);
+            //     if(result1 > 0){
+            //         dataVO.setSuccess(true);
+            //     }
+            // }
+            
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("파일 저장 중 오류 발생: " + e.getMessage());
@@ -294,7 +306,86 @@ public class MyPageController {
         }
         return dataVO;
     }
+
+    @GetMapping("/toggleLikes")
+    public DataVO deleteToggleLikes(@RequestHeader("Authorization") String authorizationHeader,
+    @RequestParam("meeting_idx") String meeting_idx) {
+        DataVO dataVO = new DataVO();
+        System.out.println(meeting_idx);
+        try {
+            // 사용자 ID 추출
+            String userId = getIdFromToken(authorizationHeader, dataVO);
+            // 사용자 IDX 가져오기
+            String user_idx = usersService.getUserIdxById(userId);
+
+            int result = myPageService.toggleLikesDelete(user_idx, meeting_idx);
+
+            if(result > 0){
+                System.out.println(meeting_idx);
+                dataVO.setSuccess(true);
+            } else {
+                dataVO.setSuccess(false);
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            dataVO.setSuccess(false);
+            dataVO.setMessage(e.getMessage());
+        }
+        
+        return dataVO;
+    }
     
+    // 내가 가입한 모임들 불러오기
+    @GetMapping("/getMyMeetings")
+    public DataVO getMyMeetingsList(@RequestHeader("Authorization") String authorizationHeader) {
+        DataVO dataVO = new DataVO();
+        try {
+            // 사용자 ID 추출
+            String userId = getIdFromToken(authorizationHeader, dataVO);
+            // 사용자 IDX 가져오기
+            String user_idx = usersService.getUserIdxById(userId);
+
+            List<MyRegularMeetingVO> meetingVO = myPageService.getMyMeetingsList(user_idx);
+
+            System.out.println(meetingVO);
+            dataVO.setData(meetingVO);
+            dataVO.setSuccess(true);
+            
+        } catch (Exception e) {
+            System.out.println(e);
+            dataVO.setSuccess(false);
+            dataVO.setMessage(e.getMessage());
+        }
+        return dataVO;
+    }
+
+    // 좋아요한 모임들 불러오기
+    @GetMapping("/getMyLikesMeetings")
+    public DataVO getMyLikesMeetings(@RequestHeader("Authorization") String authorizationHeader) {
+        DataVO dataVO = new DataVO();
+        try {
+            // 사용자 ID 추출
+            String userId = getIdFromToken(authorizationHeader, dataVO);
+            // 사용자 IDX 가져오기
+            String user_idx = usersService.getUserIdxById(userId);
+
+            System.out.println(user_idx);
+            //
+            List<MyRegularMeetingVO> meetingVO = myPageService.getMyLikesMeetings(user_idx);
+
+            System.out.println(meetingVO);
+            dataVO.setData(meetingVO);
+            dataVO.setSuccess(true);
+            
+        } catch (Exception e) {
+            System.out.println(e);
+            dataVO.setSuccess(false);
+            dataVO.setMessage(e.getMessage());
+        }
+        
+        return dataVO;
+    }
+
     
 
     public String getIdFromToken(String authorizationHeader, DataVO dataVO){
@@ -310,6 +401,7 @@ public class MyPageController {
         String userId = jwtUtil.getUserIdFromToken(token);
         System.out.println("유저 아이디 : "+  userId);
         return userId;
-    }
+}
+
 
 }

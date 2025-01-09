@@ -18,10 +18,14 @@ public interface UsersMapper  {
   int insertUser(UsersVO uvo);
   UserDetailsVO getUserById(String id);
   String getPasswordById(String id);
+  
   int updatePassword(Map<String, String> map);
   int updateEmail(Map<String, String> map);
+  int updatePhone(Map<String, String> map);
 
   String getIdFromEmail(String email);
-  
+  int getEmailCount(String email);
 
+  int deleteAccount(String id);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
 }

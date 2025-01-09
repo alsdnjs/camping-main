@@ -26,6 +26,7 @@ public class CustomerOAuth2UserService extends DefaultOAuth2UserService{
     
     // 제공자를 알 수 있음.(naver, kakao, google)
     String provider = userRequest.getClientRegistration().getRegistrationId();
+
     if(provider.equals("kakao")){
       // 카카오 아이디 정보 접속
       Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
@@ -58,21 +59,26 @@ public class CustomerOAuth2UserService extends DefaultOAuth2UserService{
 
     // 네이버에서 가져오기
     } else if(provider.equals("naver")){
+
+      System.out.println(attributes);  // attributes 객체 전체 출력
+
+
       Map<String, Object> response = (Map<String, Object>) attributes.get("response");
       if(response == null){
+        System.out.println("response is null");
         throw new OAuth2AuthenticationException("Naver error");
       }
-
+      System.out.println(response);
       String name = (String) response.get("name");
       String email = (String) response.get("email");
-      String phone = (String) response.get("phone");
+      String phone = (String) response.get("mobile");
       
       // 필요한 정보를 사용하여 사용자 객체를 생성하거나 반환
       return new DefaultOAuth2User(oAuth2User.getAuthorities(), Map.of(
         "email", email,
         "phone", phone,
         "name", name,
-        "id", response.get("id")), "email");
+        "id", response.get("id")), "id");
 
     // 구글에서 가져오기
     } else if(provider.equals("google")) {

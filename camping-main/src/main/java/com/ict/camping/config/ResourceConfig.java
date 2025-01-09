@@ -20,7 +20,7 @@ public class ResourceConfig implements WebMvcConfigurer{
    
         // 인겸님 , 성주님님경로
     registry.addResourceHandler("/images/**")
-    .addResourceLocations("file:C:/Users/5/Desktop/camping-main/camping-main/src/main/resources/static/upload/")
+    .addResourceLocations("file:///C:/Users/5/Desktop/camping-main/camping-main/src/main/resources/static/upload/")
     .setCachePeriod(3600);  
  
           }

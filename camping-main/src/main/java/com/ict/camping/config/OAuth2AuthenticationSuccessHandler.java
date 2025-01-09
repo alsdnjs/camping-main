@@ -38,6 +38,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
     Authentication authentication) throws IOException, ServletException {
+      OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
 
     try { 
       System.out.println("SuccessHandler");
@@ -46,10 +47,11 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         //getPrincipal() 가지고 있는 사용자 정보를 반환
       if(authentication.getPrincipal() instanceof OAuth2User){
 
-        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        oAuth2User = (OAuth2User) authentication.getPrincipal();
         String uri = request.getRequestURI();
         String id = "";
         String provider = "";
+        String phone = "";
         System.out.println("oAuth2User" + oAuth2User);
 
         //id 는 provider마다 받는 방식이 달라서 if 문 안에 작성
@@ -62,6 +64,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         } else if (uri.contains("naver")) {
           provider = "naver";
           id = oAuth2User.getAttribute("id");
+          phone = oAuth2User.getAttribute("phone");
+          phone.replace("-", "");
 
         //구글
         } else if (uri.contains("google")) {
@@ -80,13 +84,14 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String name = oAuth2User.getAttribute("name");
         String email = oAuth2User.getAttribute("email");
         String token = jwtUtil.generateToken(id);
+
+        String user_idx = usersService.getUserIdxById(id);
         
-        
+        // 로그인 처음인가 판단
         Optional<String> passwordOpt = Optional.ofNullable(usersService.getPasswordById(id));
-        
         passwordOpt.ifPresentOrElse(
-            password -> firstLogin = "false",
-            () -> firstLogin = "true"
+          password -> firstLogin = "false",
+          () -> firstLogin = "true"
         );
 
         // String password = usersService.getPasswordById(id);  //처음 로그인이면 password 없음
@@ -105,11 +110,13 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String redirectUrl = String.format(
           //%s => String이 들어간다는 뜻
           //%b => boolean이 들어간다는 뜻
-          "http://localhost:3000/authentication/snsLoginRedirect?token=%s&id=%s&name=%s&email=%s&firstLogin=%s",
+          "http://localhost:3000/authentication/snsLoginRedirect?token=%s&user_idx=%s&id=%s&name=%s&email=%s&phone=%s&firstLogin=%s",
           URLEncoder.encode(token, StandardCharsets.UTF_8),
+          URLEncoder.encode(user_idx, StandardCharsets.UTF_8),
           URLEncoder.encode(id , StandardCharsets.UTF_8),
           URLEncoder.encode(name, StandardCharsets.UTF_8),
           URLEncoder.encode(email, StandardCharsets.UTF_8),
+          URLEncoder.encode(phone, StandardCharsets.UTF_8),
           URLEncoder.encode(firstLogin, StandardCharsets.UTF_8)
         );
 
@@ -118,14 +125,15 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         System.out.println("id : " + id);
         System.out.println("name : " + name);
         System.out.println("email : " + email);
+        System.out.println("user_idx : " + user_idx);
         System.out.println("token : " + token);
 
         // 클라이언트에 토큰, 이름, email 등 정보를 가지고 간다.
         response.sendRedirect(redirectUrl);
       }
     } catch (Exception e) {
-    e.printStackTrace();
-    response.sendRedirect("/login?error");
+      e.printStackTrace();
+      response.sendRedirect("/login?error");
     }
       
   }

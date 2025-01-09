@@ -57,11 +57,28 @@
     </insert>
     <update id="updateProfileImage" parameterType="map">
         UPDATE users
-        SET file_idx = #{file_idx}
+        SET avatar_url = #{avatar_url}
         WHERE user_idx = #{user_idx}
     </update>
     <delete id="deleteImageFile" parameterType="String">
         DELETE FROM files
         WHERE file_name = #{file_name}
+    </delete>
+    <select id="getMyMeetingsList" parameterType="String" resultType="MyRegularMeetingVO">
+        SELECT * FROM regular_meetings a
+        LEFT JOIN regular_meeting_members b
+        ON a.meeting_idx = b.meeting_idx
+        WHERE user_idx = #{user_idx}
+    </select>
+    <select id="getMyLikesMeetings" parameterType="String" resultType="MyRegularMeetingVO">
+        SELECT * FROM regular_meetings m
+        LEFT JOIN regular_meetings_favorites f
+        ON m.meeting_idx = f.meeting_idx
+        WHERE user_idx = #{user_idx};
+    </select>
+    <delete id="toggleLikesDelete" parameterType="map">
+        DELETE FROM regular_meetings_favorites
+        WHERE user_idx = #{user_idx}
+        AND meeting_idx = #{meeting_idx}
     </delete>
 </mapper>
