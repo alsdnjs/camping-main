@@ -168,9 +168,11 @@ public class UsersController {
     if (user_id == null || user_id.isEmpty()) {
       dataVO.setSuccess(true);
       dataVO.setMessage("사용 가능한 아이디 입니다.");
+      System.out.println("존재하지 않는 아이디");
     } else {
-        dataVO.setSuccess(false);  // 실패 상태로 설정
-        dataVO.setMessage("사용 중인 아이디 입니다.");
+      dataVO.setSuccess(false);  // 실패 상태로 설정
+      dataVO.setMessage("사용 중인 아이디 입니다.");
+      System.out.println("존재하는 아이디");
     }
     System.out.println(dataVO);
 
@@ -255,10 +257,11 @@ public class UsersController {
   }
   // 비밀번호 체크
   @PostMapping("/passwordCheck")
-  public DataVO userPasswordCheck(@RequestBody String password, @RequestHeader("Authorization") String authorizationHeader){
+  public DataVO userPasswordCheck(@RequestParam("password") String password, @RequestHeader("Authorization") String authorizationHeader){
 
     DataVO dataVO = new DataVO();
     System.out.println("비밀번호 : " + password);
+    System.out.println(password);
     try {
       // 토큰 추출
       String token = authorizationHeader.replace("Bearer ", "");
@@ -273,6 +276,7 @@ public class UsersController {
       // 사용자 ID 추출
       String userId = jwtUtil.getUserIdFromToken(token);
       System.out.println("유저 아이디: "+  userId);
+      System.out.println("유저 비밀번호: "+  password);
       String encodedPassword = service.getPasswordById(userId);
 
       System.out.println("암호화된 비밀번호 ㅣ " + encodedPassword);
@@ -410,7 +414,7 @@ public class UsersController {
     }
     return dataVO;
   }
-  // 아이디 찾기기
+  // 아이디 찾기
   @PostMapping("/getForgotId")
   public DataVO getForgotId(@RequestBody String email){
     DataVO dataVO = new DataVO();
@@ -430,7 +434,7 @@ public class UsersController {
     return dataVO;
   }
 
-  // 계정 삭제제
+  // 계정 삭제
   @GetMapping("/deleteAccount")
   public DataVO deleteAccount(@RequestHeader("Authorization") String authorizationHeader) {
     DataVO dataVO = new DataVO();
@@ -451,16 +455,7 @@ public class UsersController {
   }
   
 
-  // @PostMapping("/getForgotPassword")
-  // public DataVO postMethodName(@RequestBody String entity) {
-  //   DataVO dataVO = new DataVO();
-
-  //   return dataVO;
-  // }
-
   // 내가 가입한 정규모임 불러오기
-  
-
   public String getIdFromToken(String authorizationHeader, DataVO dataVO){
     // 토큰 추출
     String token = authorizationHeader.replace("Bearer ", "");

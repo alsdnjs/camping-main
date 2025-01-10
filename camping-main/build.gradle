@@ -59,6 +59,9 @@ dependencies {
 	implementation 'com.twilio.sdk:twilio:8.32.0'
 
 	implementation 'com.google.api-client:google-api-client:1.32.1'
+
+	// Spring WebSocket 스타터는 호환되는 버전으로 자동 관리됩니다.
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 }
 
 tasks.named('test') {
@@ -67,4 +70,16 @@ tasks.named('test') {
 
 tasks.withType(JavaCompile) {
     options.compilerArgs << '-parameters'
+	 // 공통 컴파일러 매개변수
+    def commonArgs = ["-parameters", "-Xlint:unchecked", "-Xlint:deprecation"]
+	 // 컴파일러 매개변수 병합 및 중복 제거
+    options.compilerArgs = (options.compilerArgs + commonArgs).unique()
 }
+
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+
+

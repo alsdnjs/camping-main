@@ -6,4 +6,5 @@ public interface EmailService {
   public boolean sendVerificationEmail(String toEmail);
   public boolean verifyCode(String email, String inputCode);
   public VerificationCode getVerificationCode(String email);
+  public String sendTemporaryPassword(String toEmail, String id);
 }

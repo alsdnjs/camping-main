@@ -89,7 +89,7 @@ spring:
 # twilio 문자 인증
 twilio:
   account-sid: ACd5f9a1f5ac6f9db9d9afe2a7cb046c1b
-  auth-token: aae267f03b05f317d2a96fbeb0d994cb
+  auth-token: 7ed2a7a076da9d304c309254fb5ca2f6
   phone-number: +12184344815
 
 server:

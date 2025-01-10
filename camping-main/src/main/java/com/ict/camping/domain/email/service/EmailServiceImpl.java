@@ -6,7 +6,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import com.ict.camping.domain.email.vo.VerificationCode;
+import com.ict.camping.domain.users.service.UsersService;
 
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -34,6 +36,7 @@ public class EmailServiceImpl implements EmailService {
         message.setTo(toEmail);
         message.setSubject("이메일 인증 코드");
         message.setText("인증 코드: " + verificationCode);
+
 
         try {
             mailSender.send(message);
@@ -75,5 +78,45 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public VerificationCode getVerificationCode(String email) {
         return verificationStore.get(email);
+    }
+
+
+    @Override
+    public String sendTemporaryPassword(String toEmail, String id) {
+
+        String temporaryPassword = generateTemporaryPassword(8);
+
+        // 이메일 발송
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("inkyum77@naver.com");
+        message.setTo(toEmail);
+        message.setSubject("임시비밀번호 발급");
+        message.setText("인증 코드: " + temporaryPassword);
+
+
+        try {
+            mailSender.send(message);
+            return temporaryPassword;
+        } catch (Exception e) {
+            // 예외 처리 (로깅 추가)
+            System.err.println("이메일 발송 실패: " + e.getMessage());
+            return "";
+        }
+    }
+    
+    // 임시 비밀번호 만드는 메서드
+    public String generateTemporaryPassword(int length) {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        SecureRandom random = new SecureRandom();
+        StringBuilder password = new StringBuilder();
+
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(characters.length());
+            password.append(characters.charAt(index));
+        }
+
+        System.out.println("임시 비번 : " + password.toString());
+
+        return password.toString();
     }
 }

@@ -30,6 +30,7 @@ public class LighthningMeetingCommentServiceImpl implements LighthningMeetingCom
             commentData.put("writer_idx", comment.getWriter_idx());
             commentData.put("writer_id", comment.getWriter_id());
             commentData.put("content", comment.getContent());
+            commentData.put("avatar_url", comment.getAvatar_url());
             commentData.put(
                 "created_at",
                 comment.getCreated_at() != null ? comment.getCreated_at().toInstant().toString() : null

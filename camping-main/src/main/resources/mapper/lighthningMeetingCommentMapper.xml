@@ -26,6 +26,7 @@
             c.post_idx,
             c.writer_idx,
             u.id AS writer_id,
+            u.avatar_url AS avatar_url,
             c.content,
             c.created_at,
             c.parent_id

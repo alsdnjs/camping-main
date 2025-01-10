@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ict.camping.domain.chat.mapper.ChatMapper">
+
+    <!-- 채팅방 생성 -->
+    <insert id="createChatRoom" parameterType="com.ict.camping.domain.chat.vo.ChatRoomVO">
+        INSERT INTO regular_meeting_chat_rooms (meeting_idx)
+        VALUES (#{meeting_idx})
+    </insert>
+
+    <!-- 특정 모임에 대한 채팅방 찾기 -->
+    <select id="findChatRoomByMeeting" parameterType="int"
+        resultType="com.ict.camping.domain.chat.vo.ChatRoomVO">
+        SELECT 
+            rmcr.room_idx,
+            rmcr.meeting_idx,
+            rm.profile_image,
+            rm.name AS meeting_name
+        FROM regular_meeting_chat_rooms rmcr
+        JOIN regular_meetings rm ON rmcr.meeting_idx = rm.meeting_idx
+        WHERE rmcr.meeting_idx = #{meeting_idx}
+        LIMIT 1
+    </select>
+
+
+    <!-- 모임에 속한 모든 유저 idx 조회 + 모임 대표이미지 -->
+    <select id="findChatRoomByRoomIdx" parameterType="int" resultType="com.ict.camping.domain.chat.vo.ChatRoomVO">
+        SELECT rmcr.room_idx, rmcr.meeting_idx, rm.profile_image, rm.name AS meeting_name
+        FROM regular_meeting_chat_rooms rmcr
+        JOIN regular_meetings rm ON rmcr.meeting_idx = rm.meeting_idx
+        WHERE rmcr.room_idx = #{roomId}
+        LIMIT 1
+    </select>
+
+    <!-- 메시지 삽입 -->
+    <insert id="insertMessage" parameterType="com.ict.camping.domain.chat.vo.ChatMessageVO">
+        INSERT INTO regular_meeting_chat_messages 
+            (room_idx, sender_idx, content, message_type, file_url)
+        VALUES 
+            (#{room_idx}, #{sender_idx}, #{content}, #{message_type}, #{file_url})
+    </insert>
+
+    <!-- 특정 채팅방의 메시지들 조회 + 아바타 (여러 건)-->
+    <select id="getMessagesByRoomIdx" parameterType="int" resultType="com.ict.camping.domain.chat.vo.ChatMessageVO">
+        SELECT 
+            msg.message_idx,
+            msg.room_idx,
+            msg.sender_idx,
+            msg.content,
+            msg.message_type,
+            msg.created_at,
+            msg.file_url,
+            u.avatar_url AS sender_avatar_url,
+            u.username AS sender_nickname
+        FROM regular_meeting_chat_messages msg
+        JOIN users u ON msg.sender_idx = u.user_idx
+        WHERE msg.room_idx = #{roomId}
+        ORDER BY msg.message_idx ASC
+    </select>
+
+    <!-- 사용자 아바타  -->
+    <!-- <select id="getAvatarUrlByUserIdx" parameterType="map" resultType="string">
+        SELECT u.avatar_url
+        FROM users u
+        WHERE u.user_idx = #{user_idx}
+        LIMIT 1
+    </select> -->
+
+    <!-- 알림 생성 -->
+    <insert id="insertNotification" parameterType="com.ict.camping.domain.chat.vo.NotificationVO">
+        INSERT INTO notifications (user_idx, message, is_read, type)
+        VALUES (#{user_idx}, #{message}, #{is_read}, #{type})
+    </insert>
+
+    <!-- 모임에 속한 모든 유저 idx 조회 (여러 건) -->
+    <select id="findAllUserIdxByMeeting" parameterType="int" resultType="int">
+        SELECT user_idx 
+        FROM regular_meeting_members
+        WHERE meeting_idx = #{meeting_idx}
+    </select>
+
+</mapper>

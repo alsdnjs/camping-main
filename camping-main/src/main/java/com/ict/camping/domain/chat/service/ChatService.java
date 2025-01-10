@@ -1,25 +1,31 @@
 package com.ict.camping.domain.chat.service;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import com.ict.camping.domain.chat.vo.ChatMessageVO;
 import com.ict.camping.domain.chat.vo.ChatRoomVO;
-import org.springframework.stereotype.Service;
 
-import java.util.*;
+public interface ChatService {
+  // 채팅방 생성
+    ChatRoomVO createChatRoom(int meeting_idx);
 
-@Service
-public class ChatService {
-    private final Map<String, ChatRoomVO> chatRooms = new HashMap<>();
+    // 특정 모임의 채팅방 조회
+    ChatRoomVO getChatRoomByMeeting(int meeting_idx);
 
-    public List<ChatRoomVO> findAllRooms() {
-        return new ArrayList<>(chatRooms.values());
-    }
+    // 메시지 전송(DB저장 + 알림)
+    void sendMessage(ChatMessageVO msg);
 
-    public ChatRoomVO findRoomById(String roomId) {
-        return chatRooms.get(roomId);
-    }
+    // 특정 채팅방의 메시지들 조회
+    List<ChatMessageVO> getMessages(@PathVariable("roomId") int roomId);
 
-    public ChatRoomVO createRoom(String name) {
-        ChatRoomVO chatRoom = new ChatRoomVO(name);
-        chatRooms.put(chatRoom.getRoomId(), chatRoom);
-        return chatRoom;
-    }
+    ChatRoomVO findChatRoomByRoomIdx(int roomId);
+
+    // 사용자별 채팅방 목록 조회
+    // public List<ChatRoomVO> getChatRoomsByUser(int userIdx);
+
+    // String getAvatarUrlByUserIdx(int sender_idx);
+
 }

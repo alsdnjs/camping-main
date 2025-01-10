@@ -38,7 +38,7 @@ public class SmsService {
     ).create();
 
     // 메시지 상태 확인
-    if ("sent".equalsIgnoreCase(message.getStatus().toString()) || 
+    if ("sent".equalsIgnoreCase(message.getStatus().toString()) ||
         "queued".equalsIgnoreCase(message.getStatus().toString())) {
         return messageBody; // 성공적으로 전송됨
     } else {
