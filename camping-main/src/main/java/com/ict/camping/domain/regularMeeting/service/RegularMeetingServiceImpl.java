@@ -153,4 +153,8 @@ public void leaveMeeting(int meetingId, int userIdx) {
     regularMeetingMapper.leaveMeeting(meetingId, userIdx);
 }
 
+@Override
+public void admindeleteMeeting(int meetingIdx) {
+    regularMeetingMapper.admindeleteMeeting(meetingIdx);
+}
 }

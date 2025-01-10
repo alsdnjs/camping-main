@@ -286,4 +286,17 @@ public class RegularMeetingController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching hashtags");
         }
     }
+
+    // 수지 관리자 페이지
+    @DeleteMapping("/delete/{meetingId}")
+    public ResponseEntity<String> admindeleteMeeting(@PathVariable("meetingId") int meetingId
+            ) {
+        try {
+            regularMeetingService.admindeleteMeeting(meetingId);
+            return ResponseEntity.ok("Meeting deleted successfully");
+        } catch (Exception e) {
+            log.error("Error deleting meeting", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting meeting");
+        }
+    }
 }

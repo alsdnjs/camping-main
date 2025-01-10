@@ -214,4 +214,10 @@
     WHERE meeting_idx = #{meetingId} AND user_idx = #{userIdx}
 </delete>
 
+<!-- 관리자의 정규 모임 삭제 -->
+<delete id="admindeleteMeeting" parameterType="int">
+    DELETE FROM regular_meetings
+    WHERE meeting_idx = #{meeting_idx};
+</delete>
+
 </mapper>

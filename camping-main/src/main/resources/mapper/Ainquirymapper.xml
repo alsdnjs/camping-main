@@ -22,20 +22,23 @@
     </select>
 
     <!-- 특정 문의 상세 조회 -->
-    <select id="findInquiryDetail" parameterType="String" resultType="com.ict.camping.admin.inquiry.vo.AInquiryVO">
-        SELECT 
-            i.*, 
-            u.username, 
-            u.id, 
-            u.email, 
-            u.phone
-        FROM 
-            inquiry i
-        JOIN 
-            users u ON i.user_idx = u.user_idx
-        WHERE 
-            i.inquiry_idx = #{inquiry_idx}
-    </select>
+<select id="findInquiryDetail" parameterType="String" resultType="com.ict.camping.admin.inquiry.vo.AInquiryVO">
+    SELECT 
+        i.*, 
+        u.username, 
+        u.id, 
+        u.email, 
+        u.phone, 
+        f.file_name  <!-- 파일 이름 추가 -->
+    FROM 
+        inquiry i
+    JOIN 
+        users u ON i.user_idx = u.user_idx
+    LEFT JOIN 
+        files f ON i.file_idx = f.file_idx  <!-- file 테이블 조인 -->
+    WHERE 
+        i.inquiry_idx = #{inquiry_idx}
+</select>
 
     <select id="findInquiryAnswer" parameterType="String" resultType="com.ict.camping.admin.inquiry.vo.AInquiryAnswerVO">
         select * from inquiry_answer where inquiry_idx = #{inquiry_idx}

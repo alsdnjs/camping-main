@@ -60,4 +60,7 @@ public interface RegularMeetingMapper {
     // 모임 탈퇴
     void leaveMeeting(@Param("meetingId") int meetingId, @Param("userIdx") int userIdx);
 
+    // <관리자> 정규 모임 삭제
+    void admindeleteMeeting(int meetingIdx);
+
 }
